@@ -97,26 +97,26 @@ class _IntroSliderState extends State<IntroSlider> {
 
 final List<OnBoardModel> onBoardData = [
   const OnBoardModel(
-    title: "Track your progress with statistics",
-    description: "Analyse personal result with detailed chart and numerical values",
-    imgUrl: "assets/images/report_is.png",
+    title: "Profile View",
+    description: "View the profiles of the added contacts",
+    imgUrl: "assets/images/profile_is.png",
   ),
   const OnBoardModel(
-    title: "Maintain the list of invoices",
+    title: "Add Contacts",
     description:
-        "Easily keep an eye over the past invoices",
-    imgUrl: 'assets/images/receipt_is.png',
+        "Easily add the new contacts by scanning the QR code",
+    imgUrl: 'assets/images/contact_is.png',
   ),
   const OnBoardModel(
-    title: "Online Transaction Processing",
+    title: "Track Direction",
     description:
-        "Buying And Selling of medicines take place between the Pharmacy Owner and Salesmen",
-    imgUrl: 'assets/images/transaction_is.png',
+        "With the help of the geolocation, can easily contact the person at his/her orgranisation's location",
+    imgUrl: 'assets/images/direction_is.png',
   ),
   const OnBoardModel(
-    title: "Ease to order the medicines from Salesmen",
+    title: "Share Profile",
     description:
-        "Analyse the stock of medicines and can order them",
-    imgUrl: 'assets/images/order_is.png',
+        "Can share the QR of your profile in order to add person",
+    imgUrl: 'assets/images/share_is.png',
   ),
 ];
