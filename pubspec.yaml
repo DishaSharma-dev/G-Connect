@@ -1,4 +1,4 @@
-name: helpinghand
+name: gconnect
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_onboard: ^2.0.0
+  rename: ^2.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

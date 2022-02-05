@@ -1,4 +1,4 @@
-# helpinghand
+# gconnect
 
 A new Flutter project.
 
