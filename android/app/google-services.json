@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "645268224999",
+    "project_id": "helpinghand-1891b",
+    "storage_bucket": "helpinghand-1891b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645268224999:android:78b1ebd4f4732a4747db42",
+        "android_client_info": {
+          "package_name": "com.example.gconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645268224999-ek41quip3a9518s9sshta8edk4o5gpvu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpMtIADYkYx8ILQzhUAvporMhuou_xERw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645268224999-ek41quip3a9518s9sshta8edk4o5gpvu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

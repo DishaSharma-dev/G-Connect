@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_onboard/flutter_onboard.dart';
+import 'package:gconnect/account/login.dart';
 
 class IntroSlider extends StatefulWidget {
   const IntroSlider({ Key? key }) : super(key: key);
@@ -16,14 +17,6 @@ class _IntroSliderState extends State<IntroSlider> {
       backgroundColor: Colors.white,
       body: OnBoard(
         pageController: _pageController,
-        // Either Provide onSkip Callback or skipButton Widget to handle skip state
-        onSkip: () {
-          // print('skipped');
-        },
-        // Either Provide onDone Callback or nextButton Widget to handle done state
-        onDone: () {
-          // print('done tapped');
-        },
         onBoardData: onBoardData,
         titleStyles: const TextStyle(
           color: Colors.purple,
@@ -45,7 +38,8 @@ class _IntroSliderState extends State<IntroSlider> {
         // Either Provide onSkip Callback or skipButton Widget to handle skip state
         skipButton: TextButton(
           onPressed: () {
-            // print('skipButton pressed');
+            Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const SignInScreen()));
           },
           child: const Text(
             "Skip",
@@ -90,7 +84,9 @@ class _IntroSliderState extends State<IntroSlider> {
         curve: Curves.easeInOutSine,
       );
     } else {
-      //print("nextButton pressed");
+      //print("on done pressed");
+       Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const SignInScreen()));
     }
   }
 }
