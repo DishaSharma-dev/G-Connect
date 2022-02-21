@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gconnect/account/login.dart';
 import 'package:gconnect/home/home.dart';
+import 'package:gconnect/models/UserModel.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,10 +43,15 @@ saveDataToFirestore(BuildContext context) async{
   final GoogleSignInAccount? gCurrentUser = GoogleSignIn().currentUser;
   DocumentSnapshot documentSnapshot = await userReference.doc(gCurrentUser?.id).get();
   if(!documentSnapshot.exists){
-   userReference.add({'id' : auth.currentUser?.uid, 
-   'name' : auth.currentUser?.displayName,
-   'email' : auth.currentUser?.email, 
-   'profilePhoto' : auth.currentUser?.photoURL,
-   'mobile' : auth.currentUser?.phoneNumber});
+    
+     var newUser = new UserModel();
+
+    newUser.image = auth.currentUser?.photoURL;
+    newUser.email = auth.currentUser?.email;
+    newUser.name = auth.currentUser?.displayName;
+    newUser.mobile = auth.currentUser?.phoneNumber;
+    newUser.uid = auth.currentUser?.uid;
+
+   userReference.add(newUser.toMap());
   }
 }
