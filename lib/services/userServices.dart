@@ -52,11 +52,26 @@ createUserIfNotExist(BuildContext context) async {
   newUser.mobile = auth.currentUser?.phoneNumber;
   newUser.uid = auth.currentUser?.uid;
 
-  userReference.doc(auth.currentUser?.uid).set(newUser.toMap(), SetOptions(merge: true));
-  
+  userReference
+      .doc(auth.currentUser?.uid)
+      .set(newUser.toMap(), SetOptions(merge: true));
+
   final sharedPreferences = await SharedPreferences.getInstance();
   sharedPreferences.setString("user_name", auth.currentUser!.displayName!);
   sharedPreferences.setString("user_email", auth.currentUser!.email!);
   sharedPreferences.setString("user_uid", auth.currentUser!.uid);
   sharedPreferences.setString("user_image", auth.currentUser!.photoURL!);
+}
+
+addUserInContactList(String uid) async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  String? userUID = sharedPreferences.getString("user_uid");
+  debugPrint(userUID);
+  userReference
+      .doc(userUID)
+      .update({
+        "contacts": FieldValue.arrayUnion([uid])
+      })
+      .whenComplete(() => {print("Completed")})
+      .catchError((e) => {print(e)});
 }

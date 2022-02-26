@@ -8,6 +8,8 @@ import 'package:icon_badge/icon_badge.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
+import '../services/userServices.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -109,21 +111,27 @@ class _HomePageState extends State<HomePage> {
 
   Future qrScanner() async {
     var cameraStatus = await Permission.camera.status;
-    String? qrData;
+    String? uid;
     if(cameraStatus.isGranted)
     {
-      qrData = await scanner.scan();
+      uid = await scanner.scan();
     }
     else
     {
       var isGrant = await Permission.camera.request();
       if(isGrant.isGranted)
       {
-        qrData = await scanner.scan();
+        uid = await scanner.scan();
       }
     }
     
-    //String? qrImageData = await scanner.scanPhoto();
+    if(uid != null)
+    {
+      addUserInContactList(uid);
+    }
+    else
+    {
 
+    }
   }
 }
