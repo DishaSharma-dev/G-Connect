@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_controller.dart';
+import 'package:gconnect/services/userServices.dart';
 
 class SignInScreen extends StatefulWidget {
 const SignInScreen({ Key? key}) : super(key: key);
@@ -48,7 +48,7 @@ Widget build(BuildContext context) {
             SizedBox(height: size.height * 0.05),
             ElevatedButton.icon(
               onPressed: () {
-              signup(context);
+              authenticateUser(context);
             },
             icon: const Icon(Icons.g_mobiledata),
             label: const Text("Sign in with Google"),

@@ -8,7 +8,7 @@ class UserModel {
   String? profession = "";
   String? organisation = "";
   String? description = "";
-  List<UserModel> contacts = [];
+  List<int> contacts = [];
 
   Map<String, dynamic> toMap() {
     return {
