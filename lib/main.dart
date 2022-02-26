@@ -6,25 +6,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); 
+  await Firebase.initializeApp();
   final pref = await SharedPreferences.getInstance();
 
-  if(pref.getBool('isUser') == true)
-  {
+  if (pref.getBool('isUser') == true) {
     runApp(const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
     ));
-  }
-  else
-  {
-    runApp(const MyApp());
+  } else {
+    runApp(
+      const MyApp(),
+    );
   }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -33,4 +32,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
