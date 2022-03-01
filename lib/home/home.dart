@@ -122,12 +122,14 @@ class _HomePageState extends State<HomePage> {
       if(isGrant.isGranted)
       {
         uid = await scanner.scan();
+       
       }
     }
-    
+     print(uid);
+     debugPrint(uid);
     if(uid != null)
     {
-      addUserInContactList(uid);
+      addUserInContactList(context, uid);
     }
     else
     {
