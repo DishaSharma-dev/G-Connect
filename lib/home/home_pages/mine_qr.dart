@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gconnect/services/userServices.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,10 +16,12 @@ class MineQR extends StatefulWidget {
 
 class _MineQRState extends State<MineQR> {
   var user_data = <String, dynamic>{};
+  String userImage = "";
   Future<void> setSharedPreferenceValue() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     user_data = jsonDecode(prefs.getString("user_data").toString())
         as Map<String, dynamic>;
+    getUserImage();
   }
 
   @override
@@ -72,7 +75,7 @@ class _MineQRState extends State<MineQR> {
                         color: Colors.deepPurpleAccent)),
                 child: CircleAvatar(
                   radius: 30.0,
-                  backgroundImage: NetworkImage(user_data["image"]),
+                  backgroundImage: NetworkImage(userImage),
                   backgroundColor: Colors.transparent,
                 )),
             Column(
@@ -107,5 +110,13 @@ class _MineQRState extends State<MineQR> {
         ),
       ),
     );
+  }
+
+  getUserImage() async {
+    String img = await getUserProfileImage();
+
+    setState(() {
+      userImage = img;
+    });
   }
 }

@@ -7,11 +7,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../account/login.dart';
 import '../home/home.dart';
 import '../models/UserModel.dart';
+import 'dart:async';
+
+import 'package:flutter/services.dart' show rootBundle;
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final userReference = FirebaseFirestore.instance.collection("user");
@@ -49,17 +53,34 @@ Future<void> authenticateUser(BuildContext context) async {
 }
 
 createUserIfNotExist(BuildContext context) async {
-  var newUser = UserModel();
-  newUser.email = auth.currentUser!.email!;
-  newUser.name = auth.currentUser!.displayName!;
-  newUser.uid = auth.currentUser!.uid;
+  var newUser = UserModel(
+      city: '',
+      contacts: [],
+      country: '',
+      description: '',
+      email: auth.currentUser!.email!,
+      mobile: '',
+      name: auth.currentUser!.displayName!,
+      organisation: '',
+      pincode: '',
+      profession: '',
+      state: '',
+      street: '',
+      uid: auth.currentUser!.uid);
+
   Map<String, dynamic> userData = newUser.toMap();
 
+  File newUserImage = await getImageFileFromAssets('avatar.png');
   userReference.doc(auth.currentUser?.uid).get().then((snapshot) => {
         if (snapshot.exists)
           {userData = snapshot.data() as Map<String, String>}
         else
-          {userReference.doc(auth.currentUser?.uid).set(newUser.toMap())}
+          {
+            userReference
+                .doc(auth.currentUser?.uid)
+                .set(newUser.toMap())
+                .whenComplete(() => {uploadProfileImage(newUserImage)})
+          }
       });
 
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -89,13 +110,16 @@ addUserInContactList(BuildContext context, String uid) async {
       });
 }
 
-UserModel getUserProfile(String uid) {
-  UserModel userDetails = UserModel();
-  userReference.doc(uid).get().then((snapshot) => {
-        if (snapshot.exists) {userDetails = snapshot.data() as UserModel}
+Future<Map<String, dynamic>> getUserProfile(String uid) async {
+  Map<String, dynamic> profile = {};
+  await userReference.doc(uid).get().then((snapshot) => {
+        if (snapshot.exists)
+          {
+            profile = snapshot.data()!,
+          }
       });
-
-  return userDetails;
+  print(profile);
+  return profile;
 }
 
 updateUserProfile(
@@ -128,7 +152,7 @@ updateUserProfile(
       .catchError((onError) => {debugPrint("error")});
 }
 
-uploadProfileImage(BuildContext context, File image) async {
+uploadProfileImage(File image) async {
   final sharedPreferences = await SharedPreferences.getInstance();
   String userUID =
       jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
@@ -136,10 +160,19 @@ uploadProfileImage(BuildContext context, File image) async {
   storage.ref().child('profiles/$userUID').putFile(image);
 }
 
-getUserProfileImage() async {
+Future<String> getUserProfileImage() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   String userUID =
       jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
 
-  storage.ref().child('profiles/$userUID');
+  return storage.ref().child('profiles/$userUID').getDownloadURL();
+}
+
+Future<File> getImageFileFromAssets(String imageName) async {
+  final byteData = await rootBundle.load('assets/images/$imageName');
+  final file = File('${(await getTemporaryDirectory()).path}/$imageName');
+  await file.writeAsBytes(byteData.buffer
+      .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+  return file;
 }

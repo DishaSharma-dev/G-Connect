@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:country_state_city_pro/country_state_city_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:gconnect/services/userServices.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -14,15 +16,18 @@ class ProfilePage extends StatefulWidget {
 class MapScreenState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   bool _status = false;
-  final GlobalKey<FormState> _formKey = GlobalKey(); 
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  String profileImage = "";
 
   @override
   void initState() {
-    super.initState(); 
+    super.initState();
+    getProfileImage();
+    getProfile();
   }
 
   final picker = ImagePicker();
-  File _imageFile = File("assets/images/connect.png");
+  File? _imageFile;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -59,16 +64,20 @@ class MapScreenState extends State<ProfilePage>
                             Container(
                               width: 140.0,
                               height: 140.0,
-
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                               ),
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: Image.file(
-                                    _imageFile,
-                                    fit: BoxFit.fill,
-                                  )),
+                                  child: _imageFile != null
+                                      ? Image.file(
+                                          _imageFile!,
+                                          fit: BoxFit.fill,
+                                        )
+                                      : Image.network(
+                                          profileImage,
+                                          fit: BoxFit.fill,
+                                        )),
                             ),
                           ],
                         ),
@@ -182,6 +191,9 @@ class MapScreenState extends State<ProfilePage>
             controller: controller,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: inputType,
+            style: TextStyle(
+              color: isEnabled ? Colors.black : Colors.grey
+            ),
             keyboardAppearance: Brightness.light,
             cursorColor: const Color.fromARGB(255, 179, 136, 255),
             decoration: InputDecoration(
@@ -256,9 +268,11 @@ class MapScreenState extends State<ProfilePage>
                       cityController.text,
                     );
                   }
-                  uploadProfileImage(context, _imageFile);
+                  if (_imageFile != null) {
+                    uploadProfileImage(_imageFile!);
+                  }
                   setState(() {
-                    _status = true;
+                    _status = !_status;
                   });
                 },
               ),
@@ -271,8 +285,8 @@ class MapScreenState extends State<ProfilePage>
               child: ElevatedButton(
                 child: const Text("Cancel"),
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.redAccent.shade200),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.redAccent.shade200),
                 ),
                 onPressed: () {
                   setState(() {
@@ -313,5 +327,33 @@ class MapScreenState extends State<ProfilePage>
     setState(() {
       _imageFile = File(pickedFile!.path);
     });
+  }
+
+  getProfileImage() async {
+    String img = await getUserProfileImage();
+    setState(() {
+      profileImage = img;
+    });
+  }
+
+  getProfile() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    String userUID =
+        jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+    Map<String, dynamic> profile = await getUserProfile(userUID);
+    if (profile.isNotEmpty) {
+      setState(() {
+        nameController.text = profile['name'];
+        emailController.text = profile['email'];
+        mobileController.text = profile['mobile'];
+        professionController.text = profile['profession'];
+        organisationController.text = profile['organization'];
+        streetController.text = profile['street'];
+        countryController.text = profile['country'];
+        stateController.text = profile['state'];
+        cityController.text = profile['city'];
+        pincodeController.text = profile['pincode'];
+      });
+    }
   }
 }
