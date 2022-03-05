@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
             Home(),
             Favorite(),
             MineQR(),
-            Profile()
+            const ProfilePage()
           ],
         ),
       floatingActionButton: FloatingActionButton(
