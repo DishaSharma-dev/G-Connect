@@ -48,7 +48,7 @@ dependencies:
   permission_handler:
   http: ^0.13.4
   country_state_city_pro: ^0.0.3
-country_state_city_pro: ^0.0.3
+  path_provider:
 
 dev_dependencies:
   flutter_test:

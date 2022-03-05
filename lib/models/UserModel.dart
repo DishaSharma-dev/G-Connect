@@ -2,9 +2,7 @@ class UserModel {
   String uid = "";
   String name = "";
   String email = "";
-  String image = "";
   String mobile = "";
-  String location = "";
   String profession = "";
   String organisation = "";
   String description = "";
@@ -20,9 +18,7 @@ class UserModel {
       'uid': uid,
       'name': name,
       'email': email,
-      'image': image,
       'mobile': mobile,
-      'location': location,
       'profession': profession,
       'organisation': organisation,
       'description': description,
@@ -34,4 +30,35 @@ class UserModel {
       'contacts': contacts
     };
   }
+
+  UserModel(
+      {required this.uid,
+      required this.name,
+      required this.email,
+      required this.mobile,
+      required this.profession,
+      required this.organisation,
+      required this.description,
+      required  this.pincode,
+      required  this.street,
+      required  this.country,
+      required  this.state,
+      required  this.city,
+      required  this.contacts});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        uid: json["uid"],
+        name: json["name"],
+        email: json["email"],
+        mobile: json["mobile"],
+        profession: json["profession"],
+        organisation: json["organisation"],
+        description: json["description"],
+        pincode: json["pincode"],
+        street: json["street"],
+        country: json["country"],
+        state: json["state"],
+        city: json["city"],
+        contacts: json["contacts"],
+      );
 }
