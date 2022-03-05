@@ -75,14 +75,7 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/images/share_is.png
-    - assets/images/direction_is.png
-    - assets/images/profile_is.png
-    - assets/images/contact_is.png
-    - assets/images/googleimage.png
-    - assets/images/main_top.png
-    - assets/images/main_bottom.png
-    - assets/images/connect.png
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

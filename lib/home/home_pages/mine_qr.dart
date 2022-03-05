@@ -1,10 +1,10 @@
 // ignore_for_file: unnecessary_new
 
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class MineQR extends StatefulWidget {
   MineQR({Key? key}) : super(key: key);
@@ -14,14 +14,11 @@ class MineQR extends StatefulWidget {
 }
 
 class _MineQRState extends State<MineQR> {
-  String name = "", email = "", image = "", uid = "";
-
+  var user_data = <String, dynamic>{};
   Future<void> setSharedPreferenceValue() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    name = prefs.getString("user_name")!;
-    email = prefs.getString("user_email")!;
-    image = prefs.getString("user_image")!;
-    uid = prefs.getString("user_uid")!;
+    user_data = jsonDecode(prefs.getString("user_data").toString())
+        as Map<String, dynamic>;
   }
 
   @override
@@ -75,17 +72,17 @@ class _MineQRState extends State<MineQR> {
                         color: Colors.deepPurpleAccent)),
                 child: CircleAvatar(
                   radius: 30.0,
-                  backgroundImage: NetworkImage(image),
+                  backgroundImage: NetworkImage(user_data["image"]),
                   backgroundColor: Colors.transparent,
                 )),
             Column(
               children: [
-                Text(name),
-                Text(email),
+                Text(user_data["name"]),
+                Text(user_data["email"]),
               ],
             ),
             QrImage(
-              data: uid,
+              data: user_data["uid"],
               version: QrVersions.auto,
               size: 200.0,
             ),
@@ -98,8 +95,7 @@ class _MineQRState extends State<MineQR> {
                 size: 30.0,
               ),
               label: const Text('Share QR'),
-              onPressed: () {
-              },
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 primary: Colors.deepPurpleAccent,
                 shape: new RoundedRectangleBorder(

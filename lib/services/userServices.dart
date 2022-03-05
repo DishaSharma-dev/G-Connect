@@ -52,26 +52,38 @@ createUserIfNotExist(BuildContext context) async {
   newUser.mobile = auth.currentUser?.phoneNumber;
   newUser.uid = auth.currentUser?.uid;
 
-  userReference
-      .doc(auth.currentUser?.uid)
-      .set(newUser.toMap(), SetOptions(merge: true));
+  Map<String, dynamic> userData = newUser.toMap();
+
+  userReference.doc(auth.currentUser?.uid).get().then((snapshot) => {
+        if (snapshot.exists)
+          {userData = snapshot.data() as Map<String, String>}
+        else
+          {userReference.doc(auth.currentUser?.uid).set(newUser.toMap())}
+      });
 
   final sharedPreferences = await SharedPreferences.getInstance();
-  sharedPreferences.setString("user_name", auth.currentUser!.displayName!);
-  sharedPreferences.setString("user_email", auth.currentUser!.email!);
-  sharedPreferences.setString("user_uid", auth.currentUser!.uid);
-  sharedPreferences.setString("user_image", auth.currentUser!.photoURL!);
+  sharedPreferences.setString("user_data", jsonEncode(userData));
 }
 
-addUserInContactList(String uid) async {
+addUserInContactList(BuildContext context, String uid) async {
   final sharedPreferences = await SharedPreferences.getInstance();
-  String? userUID = sharedPreferences.getString("user_uid");
+  String? userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
   debugPrint(userUID);
-  userReference
-      .doc(userUID)
-      .update({
-        "contacts": FieldValue.arrayUnion([uid])
-      })
-      .whenComplete(() => {print("Completed")})
-      .catchError((e) => {print(e)});
+  userReference.doc(uid).get().then((value) => {
+        if (value.exists)
+          {
+            userReference
+                .doc(userUID)
+                .update({
+                  "contacts": FieldValue.arrayUnion([
+                    {"uid": uid, "isFavorite": false}
+                  ])
+                })
+                .whenComplete(() => {})
+                .catchError((e) => {})
+          }
+        else
+          {}
+      });
 }
