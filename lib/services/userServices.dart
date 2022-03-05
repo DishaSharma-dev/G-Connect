@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -13,6 +15,8 @@ import '../models/UserModel.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final userReference = FirebaseFirestore.instance.collection("user");
+
+final FirebaseStorage storage = FirebaseStorage.instance;
 
 Future<void> authenticateUser(BuildContext context) async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -46,12 +50,9 @@ Future<void> authenticateUser(BuildContext context) async {
 
 createUserIfNotExist(BuildContext context) async {
   var newUser = UserModel();
-  newUser.image = auth.currentUser?.photoURL;
-  newUser.email = auth.currentUser?.email;
-  newUser.name = auth.currentUser?.displayName;
-  newUser.mobile = auth.currentUser?.phoneNumber;
-  newUser.uid = auth.currentUser?.uid;
-
+  newUser.email = auth.currentUser!.email!;
+  newUser.name = auth.currentUser!.displayName!;
+  newUser.uid = auth.currentUser!.uid;
   Map<String, dynamic> userData = newUser.toMap();
 
   userReference.doc(auth.currentUser?.uid).get().then((snapshot) => {
@@ -67,7 +68,7 @@ createUserIfNotExist(BuildContext context) async {
 
 addUserInContactList(BuildContext context, String uid) async {
   final sharedPreferences = await SharedPreferences.getInstance();
-  String? userUID =
+  String userUID =
       jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
   debugPrint(userUID);
   userReference.doc(uid).get().then((value) => {
@@ -86,4 +87,59 @@ addUserInContactList(BuildContext context, String uid) async {
         else
           {}
       });
+}
+
+UserModel getUserProfile(String uid) {
+  UserModel userDetails = UserModel();
+  userReference.doc(uid).get().then((snapshot) => {
+        if (snapshot.exists) {userDetails = snapshot.data() as UserModel}
+      });
+
+  return userDetails;
+}
+
+updateUserProfile(
+    String name,
+    String mobile,
+    String profession,
+    String organization,
+    String street,
+    String pincode,
+    String country,
+    String state,
+    String city) async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  String userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+  userReference
+      .doc(userUID)
+      .update({
+        "name": name,
+        "mobile": mobile,
+        "profession": profession,
+        "organization": organization,
+        "street": street,
+        "country": country,
+        "state": state,
+        "city": city,
+        "pincode": pincode
+      })
+      .then((snapshot) => debugPrint("success"))
+      .catchError((onError) => {debugPrint("error")});
+}
+
+uploadProfileImage(BuildContext context, File image) async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  String userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+
+  storage.ref().child('profiles/$userUID').putFile(image);
+}
+
+getUserProfileImage() async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  String userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+
+  storage.ref().child('profiles/$userUID');
 }

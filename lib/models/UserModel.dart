@@ -1,13 +1,18 @@
 class UserModel {
-  String? uid = "";
-  String? name = "";
-  String? email = "";
-  String? image = "";
-  String? mobile = "";
-  String? location = "";
-  String? profession = "";
-  String? organisation = "";
-  String? description = "";
+  String uid = "";
+  String name = "";
+  String email = "";
+  String image = "";
+  String mobile = "";
+  String location = "";
+  String profession = "";
+  String organisation = "";
+  String description = "";
+  String street = "";
+  String country = "";
+  String state = "";
+  String city = "";
+  String pincode = "";
   List<dynamic> contacts = [];
 
   Map<String, dynamic> toMap() {
@@ -21,6 +26,11 @@ class UserModel {
       'profession': profession,
       'organisation': organisation,
       'description': description,
+      'pincode': pincode,
+      'street': street,
+      'country': country,
+      'state': state,
+      'city': city,
       'contacts': contacts
     };
   }
