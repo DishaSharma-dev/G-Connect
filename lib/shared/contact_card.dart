@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gconnect/services/userServices.dart';
+import 'package:gconnect/shared/user_details.dart';
 
 class ContactRow extends StatefulWidget {
   const ContactRow({Key? key, required this.uid}) : super(key: key);
@@ -24,8 +25,8 @@ class _ContactRowState extends State<ContactRow> {
 
   @override
   void initState() {
-    super.initState();
     setProfileData(uid);
+        super.initState();
   }
 
   @override
@@ -64,7 +65,7 @@ class _ContactRowState extends State<ContactRow> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-             Padding(
+            Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Flexible(
                   flex: 1,
@@ -75,7 +76,7 @@ class _ContactRowState extends State<ContactRow> {
                           fontWeight: FontWeight.w600,
                           fontSize: 18.0)),
                 )),
-             Padding(
+            Padding(
               padding: const EdgeInsets.only(top: 3.0),
               child: Flexible(
                 flex: 1,
@@ -104,7 +105,10 @@ class _ContactRowState extends State<ContactRow> {
                       child: RichText(
                           text: TextSpan(children: [
                         const WidgetSpan(
-                          child: Icon(Icons.phone_outlined, size: 20,),
+                          child: Icon(
+                            Icons.phone_outlined,
+                            size: 20,
+                          ),
                         ),
                         TextSpan(
                             text: userData['mobile'],
@@ -118,19 +122,27 @@ class _ContactRowState extends State<ContactRow> {
                     Flexible(
                       flex: 1,
                       child: RichText(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
                           text: TextSpan(children: [
-                        const WidgetSpan(
-                          style: TextStyle(),
-                          child: Icon(Icons.location_on_outlined, size: 20,),
-                        ),
-                        TextSpan(
-                            text: userData['city'] + ", " + userData['country'],
-                            style: const TextStyle(
-                                color: contactPhone,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w300,
-                                fontSize: 12.0))
-                      ])),
+                            const WidgetSpan(
+                              style: TextStyle(),
+                              child: Icon(
+                                Icons.location_on_outlined,
+                                size: 20,
+                              ),
+                            ),
+                            TextSpan(
+                                text: userData['city'] +
+                                    ", " +
+                                    userData['country'],
+                                style: const TextStyle(
+                                    color: contactPhone,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 12.0))
+                          ])),
                     ),
                   ],
                 ),
@@ -145,7 +157,13 @@ class _ContactRowState extends State<ContactRow> {
       height: 120.0,
       margin: const EdgeInsets.only(top: 16.0, bottom: 8.0),
       child: FlatButton(
-        onPressed: () => {print("hello")},
+        onPressed: () => {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      UserDetail(userData: userData, userImg: userImage)))
+        },
         child: Stack(
           children: <Widget>[
             planetCard,
