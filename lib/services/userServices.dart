@@ -71,9 +71,13 @@ createUserIfNotExist(BuildContext context) async {
   Map<String, dynamic> userData = newUser.toMap();
 
   File newUserImage = await getImageFileFromAssets('avatar.png');
+  final sharedPreferences = await SharedPreferences.getInstance();
   userReference.doc(auth.currentUser?.uid).get().then((snapshot) => {
         if (snapshot.exists)
-          {userData = snapshot.data() as Map<String, String>}
+          {
+            userData = snapshot.data() as Map<String, dynamic>,
+            sharedPreferences.setString("user_data", jsonEncode(userData))
+          }
         else
           {
             userReference
@@ -82,8 +86,6 @@ createUserIfNotExist(BuildContext context) async {
                 .whenComplete(() => {uploadProfileImage(newUserImage)})
           }
       });
-
-  final sharedPreferences = await SharedPreferences.getInstance();
   sharedPreferences.setString("user_data", jsonEncode(userData));
 }
 
@@ -118,7 +120,6 @@ Future<Map<String, dynamic>> getUserProfile(String uid) async {
             profile = snapshot.data()!,
           }
       });
-  print(profile);
   return profile;
 }
 
@@ -160,12 +161,8 @@ uploadProfileImage(File image) async {
   storage.ref().child('profiles/$userUID').putFile(image);
 }
 
-Future<String> getUserProfileImage() async {
-  final sharedPreferences = await SharedPreferences.getInstance();
-  String userUID =
-      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-
-  return storage.ref().child('profiles/$userUID').getDownloadURL();
+Future<String> getUserProfileImage(String userUID) async {
+  return await storage.ref().child('profiles/$userUID').getDownloadURL();
 }
 
 Future<File> getImageFileFromAssets(String imageName) async {

@@ -113,7 +113,11 @@ class _MineQRState extends State<MineQR> {
   }
 
   getUserImage() async {
-    String img = await getUserProfileImage();
+      final sharedPreferences = await SharedPreferences.getInstance();
+  String userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+
+    String img = await getUserProfileImage(userUID);
 
     setState(() {
       userImage = img;

@@ -330,7 +330,11 @@ class MapScreenState extends State<ProfilePage>
   }
 
   getProfileImage() async {
-    String img = await getUserProfileImage();
+      final sharedPreferences = await SharedPreferences.getInstance();
+  String userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+
+    String img = await getUserProfileImage(userUID);
     setState(() {
       profileImage = img;
     });

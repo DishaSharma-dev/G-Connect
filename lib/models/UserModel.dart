@@ -11,7 +11,7 @@ class UserModel {
   String state = "";
   String city = "";
   String pincode = "";
-  List<dynamic> contacts = [];
+  List<String> contacts ;
 
   Map<String, dynamic> toMap() {
     return {
