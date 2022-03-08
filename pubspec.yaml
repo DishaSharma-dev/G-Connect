@@ -49,6 +49,7 @@ dependencies:
   http: ^0.13.4
   country_state_city_pro: ^0.0.3
   path_provider:
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
