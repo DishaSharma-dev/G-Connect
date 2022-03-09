@@ -120,6 +120,7 @@ Future<Map<String, dynamic>> getUserProfile(String uid) async {
             profile = snapshot.data()!,
           }
       });
+      print(profile);
   return profile;
 }
 
@@ -172,4 +173,20 @@ Future<File> getImageFileFromAssets(String imageName) async {
       .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
   return file;
+}
+
+
+deleteContact(String uid, bool isFavorite) async
+{
+  final sharedPreferences = await SharedPreferences.getInstance();
+  String userUID =
+      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+       
+  await userReference.doc(userUID).update({
+    "contacts" : FieldValue.arrayRemove([{
+      "uid" : uid,
+      "isFavorite" : isFavorite
+    }])
+  });
+
 }

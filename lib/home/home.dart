@@ -54,19 +54,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("G-Connect"),
-        backgroundColor: Colors.purple,
+        title: const Text("G-Connect", style: TextStyle(
+          color: Colors.black
+        ),),
+        backgroundColor: Colors.white,
         actions: <Widget>[
-          IconBadge(
-            icon: const Icon(Icons.notifications_none),
-            itemCount: 100,
-            badgeColor: Colors.red,
-            itemColor: Colors.white,
-            maxCount: 99,
-            hideZero: true,
-            onTap: () {
-            },
-          ),
+          IconButton(onPressed: (){}, icon: const Icon(Icons.logout_rounded, color: Colors.black,))
         ],
       ),
       body: PageView(

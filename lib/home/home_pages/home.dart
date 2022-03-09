@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
       child: ListView.builder(
         itemExtent: 160.0,
         itemCount: contactsUID.length,
-        itemBuilder: (_, index) => ContactRow(uid: contactsUID[index]),
+        itemBuilder: (_, index) => ContactRow(uid: contactsUID[index]['uid'], isFavorite: contactsUID[index]['isFavorite']),
       ),
     );
   }

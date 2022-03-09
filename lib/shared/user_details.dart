@@ -59,10 +59,9 @@ class PanelWidget extends StatelessWidget {
   Widget build(BuildContext context) => ListView(children: <Widget>[
         CircleAvatar(
           radius: 50,
-          child: Container(
-      margin: const EdgeInsets.only(left: 18.0, top: 24),
-      width: 80.0,
-      height: 80.0,
+          child: Container( 
+      width: 90.0,
+      height: 90.0,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
       ),
