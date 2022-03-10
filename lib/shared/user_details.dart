@@ -3,8 +3,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class UserDetail extends StatelessWidget {
   final Map<String, dynamic> userData;
-  final String userImg;
-  const UserDetail({Key? key, required this.userData, required this.userImg})
+  const UserDetail({Key? key, required this.userData })
       : super(key: key);
 
   @override
@@ -35,8 +34,7 @@ class UserDetail extends StatelessWidget {
         minHeight: panelHeightClosed,
         panelBuilder: (controller) => PanelWidget(
           controller: controller,
-          userData: userData,
-          userImg: userImg,
+          userData: userData
         ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
       ),
@@ -47,12 +45,10 @@ class UserDetail extends StatelessWidget {
 class PanelWidget extends StatelessWidget {
   final ScrollController controller;
   final Map<String, dynamic> userData;
-  final String userImg;
   const PanelWidget(
       {Key? key,
       required this.controller,
-      required this.userData,
-      required this.userImg})
+      required this.userData})
       : super(key: key);
 
   @override
@@ -68,7 +64,7 @@ class PanelWidget extends StatelessWidget {
       child: ClipRRect(
           borderRadius: BorderRadius.circular(100),
           child: Image.network(
-            userImg,
+            userData['userImage'],
             fit: BoxFit.fill,
           )),
     ),

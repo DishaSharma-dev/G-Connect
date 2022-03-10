@@ -51,6 +51,8 @@ dependencies:
   path_provider:
   sliding_up_panel: ^2.0.0+1
   device_preview: ^0.8.0
+  flutter_easyloading: ^3.0.3
+  loading_animation_widget: ^1.1.0+3
 
 dev_dependencies:
   flutter_test:

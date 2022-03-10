@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gconnect/services/userServices.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/contact_card.dart';
@@ -13,7 +15,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var contactsUID = [];
+  List<Map<String, dynamic>>? contactDataList;
 
   @override
   void initState() {
@@ -27,20 +29,28 @@ class _HomeState extends State<Home> {
       color: Colors.white,
       child: ListView.builder(
         itemExtent: 160.0,
-        itemCount: contactsUID.length,
-        itemBuilder: (_, index) => ContactRow(uid: contactsUID[index]['uid'], isFavorite: contactsUID[index]['isFavorite']),
+        itemCount: contactDataList?.length,
+        itemBuilder: (_, index) => ContactRow(data: contactDataList![index]),
       ),
     );
   }
 
   setContactList() async {
     final sharedPreferences = await SharedPreferences.getInstance();
-    var contacts = jsonDecode(
+    var contacts = [];
+    contacts = jsonDecode(
         sharedPreferences.getString("user_data").toString())['contacts'];
-    setState(() {
-      contactsUID = contacts;
-    });
 
-    
+    List<Map<String, dynamic>>? contactList;
+
+    contacts.forEach((element) async {
+      Map<String, dynamic> data = await getUserProfile(element['uid']);
+      data['userImage'] = await getUserProfileImage(data['uid']);
+      data['isFavorite'] = element['isFavorite'];
+      contactList?.add(data);
+    });
+    setState(() {
+      contactDataList = contactList;
+    });
   }
 }

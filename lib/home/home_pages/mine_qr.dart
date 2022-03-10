@@ -6,17 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:gconnect/services/userServices.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MineQR extends StatefulWidget {
-  MineQR({Key? key}) : super(key: key);
+  const MineQR({Key? key}) : super(key: key);
 
   @override
   State<MineQR> createState() => _MineQRState();
 }
 
 class _MineQRState extends State<MineQR> {
-  var user_data = <String, dynamic>{};
-  String userImage = "";
+  Map<String, dynamic>? user_data;
+  String? userImage;
   Future<void> setSharedPreferenceValue() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     user_data = jsonDecode(prefs.getString("user_data").toString())
@@ -32,7 +33,9 @@ class _MineQRState extends State<MineQR> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    if(user_data != null && userImage != null)
+    {
+        return Container(
       margin: const EdgeInsets.all(25),
       decoration: BoxDecoration(
           border: Border.all(
@@ -75,17 +78,17 @@ class _MineQRState extends State<MineQR> {
                         color: Colors.deepPurpleAccent)),
                 child: CircleAvatar(
                   radius: 30.0,
-                  backgroundImage: NetworkImage(userImage),
+                  backgroundImage: NetworkImage(userImage!),
                   backgroundColor: Colors.transparent,
                 )),
             Column(
               children: [
-                Text(user_data["name"]),
-                Text(user_data["email"]),
+                Text(user_data!["name"]),
+                Text(user_data!["email"]),
               ],
             ),
             QrImage(
-              data: user_data["uid"],
+              data: user_data!["uid"],
               version: QrVersions.auto,
               size: 200.0,
             ),
@@ -110,7 +113,12 @@ class _MineQRState extends State<MineQR> {
         ),
       ),
     );
-  }
+    }
+    return LoadingAnimationWidget.prograssiveDots(
+      color: Colors.deepPurpleAccent,
+      size: 50,
+    );
+}
 
   getUserImage() async {
       final sharedPreferences = await SharedPreferences.getInstance();

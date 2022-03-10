@@ -4,6 +4,7 @@ import 'package:country_state_city_pro/country_state_city_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:gconnect/services/userServices.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,7 +18,7 @@ class MapScreenState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   bool _status = false;
   final GlobalKey<FormState> _formKey = GlobalKey();
-  String profileImage = "";
+  String? profileImage;
 
   @override
   void initState() {
@@ -43,136 +44,151 @@ class MapScreenState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-      color: Colors.white,
-      child: ListView(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Container(
-                color: Colors.white,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Stack(fit: StackFit.loose, children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: 140.0,
-                              height: 140.0,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100),
-                                  child: _imageFile != null
-                                      ? Image.file(
-                                          _imageFile!,
-                                          fit: BoxFit.fill,
-                                        )
-                                      : Image.network(
-                                          profileImage,
-                                          fit: BoxFit.fill,
-                                        )),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                            padding:
-                                const EdgeInsets.only(top: 90.0, right: 100.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                CircleAvatar(
-                                  backgroundColor: Colors.deepPurpleAccent,
-                                  radius: 25.0,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.camera_alt),
-                                    color: Colors.white,
-                                    onPressed: () {
-                                      pickImage();
-                                    },
-                                  ),
-                                )
-                              ],
-                            )),
-                      ]),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                color: const Color(0xffFFFFFF),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 25.0, top: 15),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                            padding: const EdgeInsets.only(
-                                left: 25.0, right: 25.0, top: 25.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: const <Widget>[
-                                    Text(
-                                      'Parsonal Information',
-                                      style: TextStyle(
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
+    if (profileImage != null) {
+      return Scaffold(
+          body: Container(
+        color: Colors.white,
+        child: ListView(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Stack(fit: StackFit.loose, children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 140.0,
+                                height: 140.0,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    _getEditIcon(),
-                                  ],
-                                )
-                              ],
-                            )),
-                        formField("Full Name", Icons.person_outline_outlined,
-                            _status, nameController, TextInputType.name),
-                        formField("Email Address", Icons.mail_outline_outlined,
-                            false, emailController, TextInputType.emailAddress),
-                        formField("Mobile Number", Icons.phone_outlined,
-                            _status, mobileController, TextInputType.phone),
-                        formField("Profession", Icons.maps_home_work_outlined,
-                            _status, professionController, TextInputType.text),
-                        formField(
-                            "Organisation",
-                            Icons.apartment_outlined,
-                            _status,
-                            organisationController,
-                            TextInputType.text),
-                        formField("Street", Icons.add_road_outlined, _status,
-                            streetController, TextInputType.streetAddress),
-                        cscPicker(),
-                        formField("PIN Code", Icons.code, _status,
-                            pincodeController, TextInputType.number),
-                        _status ? _getActionButtons() : Container(),
-                      ],
-                    ),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: _imageFile != null
+                                        ? Image.file(
+                                            _imageFile!,
+                                            fit: BoxFit.fill,
+                                          )
+                                        : Image.network(
+                                            profileImage!,
+                                            fit: BoxFit.fill,
+                                          )),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 90.0, right: 100.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    backgroundColor: Colors.deepPurpleAccent,
+                                    radius: 25.0,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.camera_alt),
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        pickImage();
+                                      },
+                                    ),
+                                  )
+                                ],
+                              )),
+                        ]),
+                      )
+                    ],
                   ),
                 ),
-              )
-            ],
-          ),
-        ],
-      ),
-    ));
+                Container(
+                  color: const Color(0xffFFFFFF),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 25.0, top: 15),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 25.0, right: 25.0, top: 25.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const <Widget>[
+                                      Text(
+                                        'Parsonal Information',
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      _getEditIcon(),
+                                    ],
+                                  )
+                                ],
+                              )),
+                          formField("Full Name", Icons.person_outline_outlined,
+                              _status, nameController, TextInputType.name),
+                          formField(
+                              "Email Address",
+                              Icons.mail_outline_outlined,
+                              false,
+                              emailController,
+                              TextInputType.emailAddress),
+                          formField("Mobile Number", Icons.phone_outlined,
+                              _status, mobileController, TextInputType.phone),
+                          formField(
+                              "Profession",
+                              Icons.maps_home_work_outlined,
+                              _status,
+                              professionController,
+                              TextInputType.text),
+                          formField(
+                              "Organisation",
+                              Icons.apartment_outlined,
+                              _status,
+                              organisationController,
+                              TextInputType.text),
+                          formField("Street", Icons.add_road_outlined, _status,
+                              streetController, TextInputType.streetAddress),
+                          cscPicker(),
+                          formField("PIN Code", Icons.code, _status,
+                              pincodeController, TextInputType.number),
+                          _status ? _getActionButtons() : Container(),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+      ));
+    }
+    return LoadingAnimationWidget.prograssiveDots(
+      color: Colors.deepPurpleAccent,
+      size: 50,
+    );
   }
 
   @override
@@ -191,9 +207,7 @@ class MapScreenState extends State<ProfilePage>
             controller: controller,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: inputType,
-            style: TextStyle(
-              color: isEnabled ? Colors.black : Colors.grey
-            ),
+            style: TextStyle(color: isEnabled ? Colors.black : Colors.grey),
             keyboardAppearance: Brightness.light,
             cursorColor: const Color.fromARGB(255, 179, 136, 255),
             decoration: InputDecoration(
@@ -330,9 +344,9 @@ class MapScreenState extends State<ProfilePage>
   }
 
   getProfileImage() async {
-      final sharedPreferences = await SharedPreferences.getInstance();
-  String userUID =
-      jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
+    final sharedPreferences = await SharedPreferences.getInstance();
+    String userUID =
+        jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
 
     String img = await getUserProfileImage(userUID);
     setState(() {

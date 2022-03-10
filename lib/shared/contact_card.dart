@@ -4,13 +4,11 @@ import 'package:gconnect/shared/user_details.dart';
 import 'package:http/http.dart';
 
 class ContactRow extends StatefulWidget {
-  const ContactRow({Key? key, required this.uid, required this.isFavorite}) : super(key: key);
-
-  final String uid;
-  final bool isFavorite;
+  const ContactRow({Key? key, required this.data}) : super(key: key);
+  final Map<String, dynamic> data;
 
   @override
-  State<ContactRow> createState() => _ContactRowState(uid, isFavorite);
+  State<ContactRow> createState() => _ContactRowState(data);
 }
 
 class _ContactRowState extends State<ContactRow> {
@@ -19,16 +17,12 @@ class _ContactRowState extends State<ContactRow> {
   static const Color contactTitle = Color(0xFFFFFFFF);
   static const Color contactProfession = Color(0x66FFFFFF);
   static const Color contactPhone = Color(0x66FFFFFF);
-  final String uid;
-  final bool isFavorite;
-  _ContactRowState(this.uid, this.isFavorite);
+  final Map<String, dynamic> data;
+  _ContactRowState(this.data);
 
-  Map<String, dynamic> userData = {};
-  String userImage = "";
 
   @override
   void initState() {
-    setProfileData(uid);
     super.initState();
   }
 
@@ -44,7 +38,7 @@ class _ContactRowState extends State<ContactRow> {
       child: ClipRRect(
           borderRadius: BorderRadius.circular(100),
           child: Image.network(
-            userImage,
+            data['userImage'],
             fit: BoxFit.fill,
           )),
     );
@@ -60,8 +54,7 @@ class _ContactRowState extends State<ContactRow> {
             onSelected: (item) async => {
               if(item == 1)
               {
-                await deleteContact(uid, isFavorite),
-                setState(() {})
+                 
               }
             },
             itemBuilder: (context) => [
@@ -73,18 +66,19 @@ class _ContactRowState extends State<ContactRow> {
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         text: TextSpan(children: [
-                          WidgetSpan(
-                            child: Icon(
+                           WidgetSpan(
+                            child:  Icon(
                               Icons.favorite_outline_outlined,
                               size: 20,
-                              color: isFavorite ? Colors.red : Colors.white,
+                              color: Colors.black,
                             ),
                           ),
-                          const TextSpan(
+                          TextSpan(
                               text: "Add Favorite",
                               style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w300,
+                                  color: Colors.black,
                                   fontSize: 12.0))
                         ])),
                   ),
@@ -137,7 +131,7 @@ class _ContactRowState extends State<ContactRow> {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Flexible(
                   flex: 1,
-                  child: Text(userData['name'],
+                  child: Text(data['name'],
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
@@ -151,7 +145,7 @@ class _ContactRowState extends State<ContactRow> {
               padding: const EdgeInsets.only(top: 3.0),
               child: Flexible(
                 flex: 1,
-                child: Text(userData['profession'],
+                child: Text(data['profession'],
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     softWrap: false,
@@ -188,7 +182,7 @@ class _ContactRowState extends State<ContactRow> {
                               ),
                             ),
                             TextSpan(
-                                text: userData['mobile'],
+                                text: data['mobile'],
                                 style: const TextStyle(
                                     color: contactPhone,
                                     fontFamily: 'Poppins',
@@ -211,9 +205,9 @@ class _ContactRowState extends State<ContactRow> {
                               ),
                             ),
                             TextSpan(
-                                text: userData['city'] +
+                                text: data['city'] +
                                     ", " +
-                                    userData['country'],
+                                    data['country'],
                                 style: const TextStyle(
                                     color: contactPhone,
                                     fontFamily: 'Poppins',
@@ -239,7 +233,7 @@ class _ContactRowState extends State<ContactRow> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      UserDetail(userData: userData, userImg: userImage)))
+                      UserDetail(userData: data)))
         },
         child: Stack(
           children: <Widget>[
@@ -250,15 +244,5 @@ class _ContactRowState extends State<ContactRow> {
         ),
       ),
     );
-  }
-
-  setProfileData(String uid) async {
-    Map<String, dynamic> data = await getUserProfile(uid);
-    print(uid);
-    String img = await getUserProfileImage(uid);
-    setState(() {
-      userData = data;
-      userImage = img;
-    });
   }
 }
