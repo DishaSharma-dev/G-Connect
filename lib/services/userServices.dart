@@ -89,7 +89,7 @@ createUserIfNotExist(BuildContext context) async {
   sharedPreferences.setString("user_data", jsonEncode(userData));
 }
 
-addUserInContactList(BuildContext context, String uid) async {
+addUserInContactList(String uid, bool isFavorite) async {
   final sharedPreferences = await SharedPreferences.getInstance();
   String userUID =
       jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
@@ -101,7 +101,7 @@ addUserInContactList(BuildContext context, String uid) async {
                 .doc(userUID)
                 .update({
                   "contacts": FieldValue.arrayUnion([
-                    {"uid": uid, "isFavorite": false}
+                    {"uid": uid, "isFavorite": isFavorite}
                   ])
                 })
                 .whenComplete(() => {})
@@ -110,6 +110,7 @@ addUserInContactList(BuildContext context, String uid) async {
         else
           {}
       });
+  updateFavoriteInSharedPreferences(uid, isFavorite, false);
 }
 
 Future<Map<String, dynamic>> getUserProfile(String uid) async {
@@ -120,7 +121,7 @@ Future<Map<String, dynamic>> getUserProfile(String uid) async {
             profile = snapshot.data()!,
           }
       });
-      print(profile);
+  print(profile);
   return profile;
 }
 
@@ -175,18 +176,39 @@ Future<File> getImageFileFromAssets(String imageName) async {
   return file;
 }
 
-
-deleteContact(String uid, bool isFavorite) async
-{
+deleteContact(String uid, bool isFavorite) async {
   final sharedPreferences = await SharedPreferences.getInstance();
   String userUID =
       jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-       
-  await userReference.doc(userUID).update({
-    "contacts" : FieldValue.arrayRemove([{
-      "uid" : uid,
-      "isFavorite" : isFavorite
-    }])
-  });
 
+  await userReference.doc(userUID).update({
+    "contacts": FieldValue.arrayRemove([
+      {"uid": uid, "isFavorite": isFavorite}
+    ])
+  });
+}
+
+updateFavoriteInSharedPreferences(String uid, bool isFavorite, bool del) async {
+  final sharedPreferences = await SharedPreferences.getInstance();
+  Map<String, dynamic> userData = {};
+  userData = jsonDecode(sharedPreferences.getString("user_data").toString());
+
+  var contacts = [];
+  contacts = userData['contacts'];
+
+  if (del) {
+    contacts.removeWhere((element) => element['uid'] == uid);
+  } else {
+    bool isExist = contacts.any((element) => element['uid'] == uid);
+    if (isExist) {
+      contacts.forEach((element) {if (element['uid'] == uid) {element['isFavorite'] = isFavorite; }});
+      
+    } else {
+      contacts.add({uid: uid, isFavorite: isFavorite});
+    }
+  }
+
+  userData['contacts'] = contacts;
+
+  sharedPreferences.setString("user_data", jsonEncode(userData));
 }

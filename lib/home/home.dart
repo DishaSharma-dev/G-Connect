@@ -118,15 +118,9 @@ class _HomePageState extends State<HomePage> {
        
       }
     }
-     print(uid);
-     debugPrint(uid);
     if(uid != null)
     {
-      addUserInContactList(context, uid);
-    }
-    else
-    {
-
+      addUserInContactList(uid, false);
     }
   }
 }

@@ -1,30 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:gconnect/home/home_pages/home.dart';
 import 'package:gconnect/services/userServices.dart';
 import 'package:gconnect/shared/user_details.dart';
-import 'package:http/http.dart';
 
-class ContactRow extends StatefulWidget {
-  const ContactRow({Key? key, required this.data}) : super(key: key);
+
+class ContactRow extends StatelessWidget {
+  final DataCallback onContactdeleted;
   final Map<String, dynamic> data;
+  const ContactRow({Key? key,required this.onContactdeleted,required this.data}) : super(key: key);
 
-  @override
-  State<ContactRow> createState() => _ContactRowState(data);
-}
-
-class _ContactRowState extends State<ContactRow> {
   static const Color contactCard = Color.fromARGB(255, 178, 133, 255);
   static const Color contactPageBackground = Color.fromRGBO(179, 136, 255, 1);
   static const Color contactTitle = Color(0xFFFFFFFF);
   static const Color contactProfession = Color(0x66FFFFFF);
   static const Color contactPhone = Color(0x66FFFFFF);
-  final Map<String, dynamic> data;
-  _ContactRowState(this.data);
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,64 +38,38 @@ class _ContactRowState extends State<ContactRow> {
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
-        child: PopupMenuButton<int>(
-            icon: const Icon(Icons.more_vert_outlined),
-            onSelected: (item) async => {
-              if(item == 1)
-              {
-                 
-              }
-            },
-            itemBuilder: (context) => [
-                  PopupMenuItem<int>(
-                    height: 5,
-                    value: 0,
-                    child: RichText(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        text: TextSpan(children: [
-                           WidgetSpan(
-                            child:  Icon(
-                              Icons.favorite_outline_outlined,
-                              size: 20,
-                              color: Colors.black,
-                            ),
-                          ),
-                          TextSpan(
-                              text: "Add Favorite",
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black,
-                                  fontSize: 12.0))
-                        ])),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem<int>(
-                    height: 5,
-                    value: 1,
-                    child: RichText(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        text: const TextSpan(children: [
-                          WidgetSpan(
-                            child: Icon(
-                              Icons.delete_outline_outlined,
-                              size: 20,
-                            ),
-                          ),
-                          TextSpan(
-                              text: "Delete",
-                              style: TextStyle(
-                                  color: Colors.redAccent,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 12.0))
-                        ])),
-                  )
-                ]));
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+                onPressed: () {
+                  deleteContact(data['uid'], data['isFavorite']);
+                  // setState(() {
+                  //   data['isFavorite'] = !data['isFavorite'];
+                  // });
+                  addUserInContactList(data['uid'], data['isFavorite']);
+
+                  updateFavoriteInSharedPreferences(
+                      data['uid'], data['isFavorite'], false);
+                },
+                icon: Icon(
+                  data['isFavorite'] ? Icons.favorite : Icons.favorite_border,
+                  color: data['isFavorite'] ? Colors.red : Colors.black,
+                )),
+            IconButton(
+                onPressed: () {
+                  deleteContact(data['uid'], data['isFavorite']); // deleted from server
+                  updateFavoriteInSharedPreferences(
+                      data['uid'], data['isFavorite'], true); // deleted from sharedPreferences
+                  onContactdeleted(data['uid']);
+                },
+
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                )),
+          ],
+        ));
 
     final planetCard = Container(
       margin: const EdgeInsets.only(left: 55.0, right: 18.0),
@@ -205,9 +168,7 @@ class _ContactRowState extends State<ContactRow> {
                               ),
                             ),
                             TextSpan(
-                                text: data['city'] +
-                                    ", " +
-                                    data['country'],
+                                text: data['city'] + ", " + data['country'],
                                 style: const TextStyle(
                                     color: contactPhone,
                                     fontFamily: 'Poppins',
@@ -232,8 +193,7 @@ class _ContactRowState extends State<ContactRow> {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      UserDetail(userData: data)))
+                  builder: (context) => UserDetail(userData: data)))
         },
         child: Stack(
           children: <Widget>[
@@ -246,3 +206,33 @@ class _ContactRowState extends State<ContactRow> {
     );
   }
 }
+
+typedef DataCallback = void Function(String uid);
+
+// class ContactRow extends StatefulWidget {
+//   const ContactRow({Key? key, required this.data}) : super(key: key);
+//   final Map<String, dynamic> data;
+
+//   @override
+//   State<ContactRow> createState() => _ContactRowState(data);
+// }
+
+// class _ContactRowState extends State<ContactRow> {
+//   static const Color contactCard = Color.fromARGB(255, 178, 133, 255);
+//   static const Color contactPageBackground = Color.fromRGBO(179, 136, 255, 1);
+//   static const Color contactTitle = Color(0xFFFFFFFF);
+//   static const Color contactProfession = Color(0x66FFFFFF);
+//   static const Color contactPhone = Color(0x66FFFFFF);
+//   final Map<String, dynamic> data;
+//   _ContactRowState(this.data);
+
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+    
+//   }
+// }
