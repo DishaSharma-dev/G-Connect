@@ -1,48 +1,32 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gconnect/home/home.dart';
 import 'package:gconnect/intro_slider/intro_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:device_preview/device_preview.dart';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 Future<void> main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final pref = await SharedPreferences.getInstance();
 
-  if (pref.getBool('isUser') == true) {
-    runApp(
-      DevicePreview(
-        enabled: true,
-        builder: (context) =>  MaterialApp(
-          useInheritedMediaQuery: true,
-          debugShowCheckedModeBanner: false,
-          builder: EasyLoading.init(),
-          home: const HomePage(),
-        ),
-      ),
-    );
-  } else {
-    runApp(
-      DevicePreview(
-        enabled: true,
-        builder: (context) => const MyApp(),
-      ),
-    );
-  }
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return  MaterialApp(
+  runApp(
+    MaterialApp(
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery: true,
-      builder: EasyLoading.init(),
-      home: IntroSlider(),
-    );
-  }
+      home: pref.getBool('isUser') == true
+          ? const HomePage(currentPage: 0)
+          : const IntroSlider(),
+    ),
+  );
 }

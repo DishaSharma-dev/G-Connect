@@ -46,70 +46,66 @@ class MapScreenState extends State<ProfilePage>
   Widget build(BuildContext context) {
     if (profileImage != null) {
       return Scaffold(
-          body: Container(
-        color: Colors.white,
-        child: ListView(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Stack(fit: StackFit.loose, children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                width: 140.0,
-                                height: 140.0,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
+          body: ListView(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Stack(fit: StackFit.loose, children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  width: 140.0,
+                                  height: 140.0,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: _imageFile != null
+                                          ? Image.file(
+                                              _imageFile!,
+                                              fit: BoxFit.fill,
+                                            )
+                                          : Image.network(
+                                              profileImage!,
+                                              fit: BoxFit.fill,
+                                            )),
                                 ),
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: _imageFile != null
-                                        ? Image.file(
-                                            _imageFile!,
-                                            fit: BoxFit.fill,
-                                          )
-                                        : Image.network(
-                                            profileImage!,
-                                            fit: BoxFit.fill,
-                                          )),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 90.0, right: 100.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    backgroundColor: Colors.deepPurpleAccent,
-                                    radius: 25.0,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.camera_alt),
-                                      color: Colors.white,
-                                      onPressed: () {
-                                        pickImage();
-                                      },
-                                    ),
-                                  )
-                                ],
-                              )),
-                        ]),
-                      )
-                    ],
+                              ],
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 90.0, right: 100.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    CircleAvatar(
+                                      backgroundColor: Colors.deepPurpleAccent,
+                                      radius: 25.0,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.camera_alt),
+                                        color: Colors.white,
+                                        onPressed: () {
+                                          pickImage();
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ]),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  color: const Color(0xffFFFFFF),
-                  child: Padding(
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 25.0, top: 15),
                     child: Form(
                       key: _formKey,
@@ -177,13 +173,11 @@ class MapScreenState extends State<ProfilePage>
                         ],
                       ),
                     ),
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
-      ));
+                  )
+                ],
+              ),
+            ],
+          ));
     }
     return LoadingAnimationWidget.prograssiveDots(
       color: Colors.deepPurpleAccent,
@@ -200,53 +194,47 @@ class MapScreenState extends State<ProfilePage>
       TextEditingController controller, TextInputType inputType) {
     return Padding(
         padding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 10),
-        child: Flexible(
-          flex: 1,
-          child: TextFormField(
-            enabled: isEnabled,
-            controller: controller,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            keyboardType: inputType,
-            style: TextStyle(color: isEnabled ? Colors.black : Colors.grey),
-            keyboardAppearance: Brightness.light,
-            cursorColor: const Color.fromARGB(255, 179, 136, 255),
-            decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                floatingLabelStyle:
-                    const TextStyle(color: Color.fromARGB(255, 179, 136, 255)),
-                labelText: label,
-                isDense: true,
-                suffixIcon: Icon(icon,
-                    color: isEnabled
-                        ? const Color.fromARGB(255, 179, 136, 255)
-                        : Colors.grey),
-                focusedBorder: const OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.deepPurpleAccent, width: 1)),
-                enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color.fromARGB(255, 179, 136, 255), width: 1)),
-                errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 1))),
-          ),
+        child: TextFormField(
+          enabled: isEnabled,
+          controller: controller,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          keyboardType: inputType,
+          style: TextStyle(color: isEnabled ? Colors.black : Colors.grey),
+          keyboardAppearance: Brightness.light,
+          cursorColor: const Color.fromARGB(255, 179, 136, 255),
+          decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              floatingLabelStyle:
+                  const TextStyle(color: Color.fromARGB(255, 179, 136, 255)),
+              labelText: label,
+              isDense: true,
+              suffixIcon: Icon(icon,
+                  color: isEnabled
+                      ? const Color.fromARGB(255, 179, 136, 255)
+                      : Colors.grey),
+              focusedBorder: const OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Colors.deepPurpleAccent, width: 1)),
+              enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Color.fromARGB(255, 179, 136, 255), width: 1)),
+              errorBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red, width: 1))),
         ));
   }
 
   Widget cscPicker() {
     return Padding(
         padding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
-        child: Flexible(
-          flex: 1,
-          child: AbsorbPointer(
-            absorbing: !_status,
-            child: CountryStateCityPicker(
-              country: countryController,
-              state: stateController,
-              city: cityController,
-              textFieldInputBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Color.fromARGB(255, 179, 136, 255), width: 1)),
-            ),
+        child: AbsorbPointer(
+          absorbing: !_status,
+          child: CountryStateCityPicker(
+            country: countryController,
+            state: stateController,
+            city: cityController,
+            textFieldInputBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Color.fromARGB(255, 179, 136, 255), width: 1)),
           ),
         ));
   }
@@ -271,6 +259,7 @@ class MapScreenState extends State<ProfilePage>
                   final bool isValid = _formKey.currentState!.validate();
                   if (isValid) {
                     updateUserProfile(
+                      context,
                       nameController.text,
                       mobileController.text,
                       professionController.text,
@@ -285,9 +274,11 @@ class MapScreenState extends State<ProfilePage>
                   if (_imageFile != null) {
                     uploadProfileImage(_imageFile!);
                   }
-                  setState(() {
+                  if(mounted) {
+                    setState(() {
                     _status = !_status;
                   });
+                  }
                 },
               ),
             ),
@@ -303,9 +294,11 @@ class MapScreenState extends State<ProfilePage>
                       Colors.redAccent.shade200),
                 ),
                 onPressed: () {
-                  setState(() {
+                  if(mounted) {
+                    setState(() {
                     _status = false;
                   });
+                  }
                 },
               ),
             ),
@@ -328,9 +321,11 @@ class MapScreenState extends State<ProfilePage>
         ),
       ),
       onTap: () {
-        setState(() {
+        if(mounted) {
+          setState(() {
           _status = !_status;
         });
+        }
       },
     );
   }
@@ -338,9 +333,11 @@ class MapScreenState extends State<ProfilePage>
   Future pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
+    if(mounted) {
+      setState(() {
       _imageFile = File(pickedFile!.path);
     });
+    }
   }
 
   getProfileImage() async {
@@ -349,9 +346,11 @@ class MapScreenState extends State<ProfilePage>
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
 
     String img = await getUserProfileImage(userUID);
-    setState(() {
+    if(mounted) {
+      setState(() {
       profileImage = img;
     });
+    }
   }
 
   getProfile() async {
@@ -360,18 +359,20 @@ class MapScreenState extends State<ProfilePage>
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
     Map<String, dynamic> profile = await getUserProfile(userUID);
     if (profile.isNotEmpty) {
-      setState(() {
+      if(mounted) {
+        setState(() {
         nameController.text = profile['name'];
         emailController.text = profile['email'];
         mobileController.text = profile['mobile'];
         professionController.text = profile['profession'];
-        organisationController.text = profile['organization'];
+        organisationController.text = profile['organisation'];
         streetController.text = profile['street'];
         countryController.text = profile['country'];
         stateController.text = profile['state'];
         cityController.text = profile['city'];
         pincodeController.text = profile['pincode'];
       });
+      }
     }
   }
 }

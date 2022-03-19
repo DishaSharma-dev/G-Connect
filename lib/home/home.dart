@@ -1,30 +1,36 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:gconnect/account/login.dart';
 import 'package:gconnect/home/home_pages/Favorite.dart';
 import 'package:gconnect/home/home_pages/home.dart';
 import 'package:gconnect/home/home_pages/mine_qr.dart';
 import 'package:gconnect/home/home_pages/profile.dart';
-import 'package:icon_badge/icon_badge.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/userServices.dart';
 
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
+  final int currentPage;
+  const HomePage({Key? key, required this.currentPage}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(currentPage);
 }
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  final int currentPage;
   PageController _pageController = PageController();
+
+  _HomePageState(this.currentPage);
 
   @override
   void initState() {
+    _currentIndex = currentPage;
     super.initState();
     _pageController = PageController();
   }
@@ -34,50 +40,58 @@ class _HomePageState extends State<HomePage> {
     _pageController.dispose();
     super.dispose();
   }
-  
-  
-  Future scanQR() async { 
-     
+
+  BottomNavyBarItem navigationItem(IconData icon, String title) {
+    return BottomNavyBarItem(
+      icon: Icon(icon),
+      title: Text(title),
+      activeColor: Colors.black,
+      textAlign: TextAlign.center,
+    );
   }
 
-  BottomNavyBarItem navigationItem(IconData icon, String title)
-  {
-    return  BottomNavyBarItem(
-            icon: Icon(icon),
-            title: Text(title),
-            activeColor: Colors.black,
-            textAlign: TextAlign.center,
-          );
-  }
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("G-Connect", style: TextStyle(
-          color: Colors.black
-        ),),
+        title: const Text(
+          "G-Connect",
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         actions: <Widget>[
-          IconButton(onPressed: (){}, icon: const Icon(Icons.logout_rounded, color: Colors.black,))
+          IconButton(
+              onPressed: () async {
+                await auth.signOut();
+                await googleSignIn.signOut();
+                SharedPreferences pref = await SharedPreferences.getInstance();
+                pref.clear();
+                await Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignInScreen()),
+                    (r) => false);
+              },
+              icon: const Icon(
+                Icons.logout_rounded,
+                color: Colors.black,
+              ))
         ],
       ),
-      body: PageView(
+      body: WillPopScope(
+        onWillPop: () => Future.sync(onWillPop),
+        child: PageView(
           controller: _pageController,
           onPageChanged: (index) {
-            setState(() => _currentIndex = index);
+            if (mounted) {
+              setState(() => _currentIndex = index);
+            }
           },
-          children: <Widget>[
-            Home(),
-            Favorite(),
-            MineQR(),
-            const ProfilePage()
-          ],
+          children: const <Widget>[Home(), Favorite(), MineQR(), ProfilePage()],
         ),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-        qrScanner()
-        },
+        onPressed: () => {qrScanner()},
         tooltip: 'Scan QR',
         child: const Icon(Icons.qr_code_scanner_outlined),
         backgroundColor: Colors.purple,
@@ -87,11 +101,17 @@ class _HomePageState extends State<HomePage> {
         showElevation: true,
         itemCornerRadius: 24,
         curve: Curves.easeIn,
-        onItemSelected: (index) => setState(() {
-              _currentIndex = index;
-              _pageController.animateToPage(index,
-                  duration: const Duration(milliseconds: 300), curve: Curves.ease);
-    }),
+        onItemSelected: (index) => {
+          if (mounted)
+            {
+              setState(() {
+                _currentIndex = index;
+                _pageController.animateToPage(index,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.ease);
+              })
+            }
+        },
         items: <BottomNavyBarItem>[
           navigationItem(Icons.home_outlined, "Home"),
           navigationItem(Icons.favorite_border_outlined, "Favorite"),
@@ -102,25 +122,29 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  bool onWillPop() {
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.ease,
+    );
+    return false;
+  }
+
   Future qrScanner() async {
     var cameraStatus = await Permission.camera.status;
     String? uid;
-    if(cameraStatus.isGranted)
-    {
+    if (cameraStatus.isGranted) {
       uid = await scanner.scan();
-    }
-    else
-    {
+    } else {
       var isGrant = await Permission.camera.request();
-      if(isGrant.isGranted)
-      {
+      if (isGrant.isGranted) {
         uid = await scanner.scan();
-       
       }
     }
-    if(uid != null)
-    {
-      addUserInContactList(uid, false);
+    if (mounted && uid != null) {
+      setState(() {
+        addUserInContactList(uid!, false);
+      });
     }
   }
 }

@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gconnect/shared/constants.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,14 +16,19 @@ import '../models/UserModel.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart' show rootBundle;
+import '../shared/constants.dart';
+import '../shared/snackbar_response.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
+final GoogleSignIn googleSignIn = GoogleSignIn();
 final userReference = FirebaseFirestore.instance.collection("user");
-
 final FirebaseStorage storage = FirebaseStorage.instance;
 
+final List<Map<String, dynamic>> contactDataListOriginal = [];
+final List<Map<String, dynamic>> contactDataList = [];
+
 Future<void> authenticateUser(BuildContext context) async {
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
   final GoogleSignInAuthentication? googleAuth =
       await googleUser?.authentication;
 
@@ -34,10 +39,9 @@ Future<void> authenticateUser(BuildContext context) async {
   );
 
   // Once signed in, return the UserCredential
-  var result = await FirebaseAuth.instance.signInWithCredential(credential);
-  if (kDebugMode) {
-    print(result);
-  }
+  UserCredential result =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
   if (result.user != null) {
     await createUserIfNotExist(context);
 
@@ -45,7 +49,9 @@ Future<void> authenticateUser(BuildContext context) async {
     sharedPreferences.setBool('isUser', true);
 
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const HomePage()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => const HomePage(currentPage: 0)));
   } else {
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const SignInScreen()));
@@ -93,7 +99,6 @@ addUserInContactList(String uid, bool isFavorite) async {
   final sharedPreferences = await SharedPreferences.getInstance();
   String userUID =
       jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-  debugPrint(userUID);
   userReference.doc(uid).get().then((value) => {
         if (value.exists)
           {
@@ -121,15 +126,15 @@ Future<Map<String, dynamic>> getUserProfile(String uid) async {
             profile = snapshot.data()!,
           }
       });
-  print(profile);
   return profile;
 }
 
 updateUserProfile(
+    BuildContext context,
     String name,
     String mobile,
     String profession,
-    String organization,
+    String organisation,
     String street,
     String pincode,
     String country,
@@ -144,15 +149,17 @@ updateUserProfile(
         "name": name,
         "mobile": mobile,
         "profession": profession,
-        "organization": organization,
+        "organisation": organisation,
         "street": street,
         "country": country,
         "state": state,
         "city": city,
         "pincode": pincode
       })
-      .then((snapshot) => debugPrint("success"))
-      .catchError((onError) => {debugPrint("error")});
+      .then((snapshot) => showResponse(context, updateProfileSuccessMessage,
+          const Color.fromARGB(253, 18, 177, 58)))
+      .catchError((onError) => showResponse(context, updateProfileFailedMessage,
+          const Color.fromARGB(252, 238, 36, 36)));
 }
 
 uploadProfileImage(File image) async {
@@ -199,10 +206,9 @@ updateFavoriteInSharedPreferences(String uid, bool isFavorite, bool del) async {
   if (del) {
     contacts.removeWhere((element) => element['uid'] == uid);
   } else {
-    bool isExist = contacts.any((element) => element['uid'] == uid);
-    if (isExist) {
-      contacts.forEach((element) {if (element['uid'] == uid) {element['isFavorite'] = isFavorite; }});
-      
+    int index = contacts.indexWhere((element) => element['uid'] == uid);
+    if (index != -1) {
+      contacts[index]['isFavorite'] = isFavorite;
     } else {
       contacts.add({uid: uid, isFavorite: isFavorite});
     }
