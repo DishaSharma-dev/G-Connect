@@ -1,34 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:country_state_city_pro/country_state_city_pro.dart';
 import 'package:flutter/material.dart';
-import 'package:gconnect/services/userServices.dart';
+import 'package:gconnect/services/user_services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+
+class Profile extends StatefulWidget {
+  const Profile({Key? key}) : super(key: key);
 
   @override
-  MapScreenState createState() => MapScreenState();
+  State<Profile> createState() => _ProfileState();
 }
 
-class MapScreenState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin {
-  bool _status = false;
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  String? profileImage;
-
-  @override
-  void initState() {
-    super.initState();
-    getProfileImage();
-    getProfile();
-  }
-
+class _ProfileState extends State<Profile> {
   final picker = ImagePicker();
-  File? _imageFile;
+  Map<String, dynamic> data = {"_status": false};
+  File? imageFile;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -42,11 +32,32 @@ class MapScreenState extends State<ProfilePage>
   TextEditingController stateController = TextEditingController();
   TextEditingController cityController = TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    if (profileImage != null) {
-      return Scaffold(
-          body: ListView(
+    return FutureBuilder(
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            !snapshot.hasData) {
+          return const Center(
+            child: Text("User not present"),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          data.addAll(snapshot.data as Map<String, dynamic>);
+          nameController.text = data['name'];
+          emailController.text = data['email'];
+          mobileController.text = data['mobile'];
+          professionController.text = data['profession'];
+          organisationController.text = data['organisation'];
+          streetController.text = data['street'];
+          countryController.text = data['country'];
+          stateController.text = data['state'];
+          cityController.text = data['city'];
+          pincodeController.text = data['pincode'];
+          return Scaffold(
+              body: ListView(
             children: <Widget>[
               Column(
                 children: <Widget>[
@@ -68,17 +79,12 @@ class MapScreenState extends State<ProfilePage>
                                     shape: BoxShape.circle,
                                   ),
                                   child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: _imageFile != null
-                                          ? Image.file(
-                                              _imageFile!,
-                                              fit: BoxFit.fill,
-                                            )
-                                          : Image.network(
-                                              profileImage!,
-                                              fit: BoxFit.fill,
-                                            )),
-                                ),
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: imageFile != null
+                                        ? Image.file(imageFile!)
+                                        : renderImage(data['user_image'] ?? ""),
+                                  ),
+                                )
                               ],
                             ),
                             Padding(
@@ -137,39 +143,51 @@ class MapScreenState extends State<ProfilePage>
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      _getEditIcon(),
+                                      getEditIcon(),
                                     ],
                                   )
                                 ],
                               )),
-                          formField("Full Name", Icons.person_outline_outlined,
-                              _status, nameController, TextInputType.name),
+                          formField(
+                              "Full Name",
+                              Icons.person_outline_outlined,
+                              data['_status'],
+                              nameController,
+                              TextInputType.name),
                           formField(
                               "Email Address",
                               Icons.mail_outline_outlined,
                               false,
                               emailController,
                               TextInputType.emailAddress),
-                          formField("Mobile Number", Icons.phone_outlined,
-                              _status, mobileController, TextInputType.phone),
+                          formField(
+                              "Mobile Number",
+                              Icons.phone_outlined,
+                              data['_status'],
+                              mobileController,
+                              TextInputType.phone),
                           formField(
                               "Profession",
                               Icons.maps_home_work_outlined,
-                              _status,
+                              data['_status'],
                               professionController,
                               TextInputType.text),
                           formField(
                               "Organisation",
                               Icons.apartment_outlined,
-                              _status,
+                              data['_status'],
                               organisationController,
                               TextInputType.text),
-                          formField("Street", Icons.add_road_outlined, _status,
-                              streetController, TextInputType.streetAddress),
+                          formField(
+                              "Street",
+                              Icons.add_road_outlined,
+                              data['_status'],
+                              streetController,
+                              TextInputType.streetAddress),
                           cscPicker(),
-                          formField("PIN Code", Icons.code, _status,
+                          formField("PIN Code", Icons.code, data['_status'],
                               pincodeController, TextInputType.number),
-                          _status ? _getActionButtons() : Container(),
+                          data['_status'] ? _getActionButtons() : Container(),
                         ],
                       ),
                     ),
@@ -178,16 +196,57 @@ class MapScreenState extends State<ProfilePage>
               ),
             ],
           ));
-    }
-    return LoadingAnimationWidget.prograssiveDots(
-      color: Colors.deepPurpleAccent,
-      size: 50,
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+      future: getProfile(),
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  renderImage(String image) {
+    if (image == "") {
+      return Image.asset(
+        "assets/images/avatar.png",
+        fit: BoxFit.fill,
+      );
+    }
+    return Image.network(
+      image,
+      fit: BoxFit.fill,
+    );
+  }
+
+  Future pickImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (mounted) {
+      setState(() {
+        imageFile = File(pickedFile!.path);
+      });
+    }
+  }
+
+  Widget getEditIcon() {
+    return GestureDetector(
+      child: const CircleAvatar(
+        backgroundColor: Colors.deepPurpleAccent,
+        radius: 14.0,
+        child: Icon(
+          Icons.edit,
+          color: Colors.white,
+          size: 16.0,
+        ),
+      ),
+      onTap: () {
+        if (mounted) {
+          setState(() {
+            data['_status'] = !data['_status'];
+          });
+        }
+      },
+    );
   }
 
   Widget formField(String label, IconData icon, bool isEnabled,
@@ -227,7 +286,7 @@ class MapScreenState extends State<ProfilePage>
     return Padding(
         padding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
         child: AbsorbPointer(
-          absorbing: !_status,
+          absorbing: !data['_status'],
           child: CountryStateCityPicker(
             country: countryController,
             state: stateController,
@@ -258,7 +317,7 @@ class MapScreenState extends State<ProfilePage>
                 onPressed: () {
                   final bool isValid = _formKey.currentState!.validate();
                   if (isValid) {
-                    updateUserProfile(
+                    UserService().updateUserProfile(
                       context,
                       nameController.text,
                       mobileController.text,
@@ -271,13 +330,13 @@ class MapScreenState extends State<ProfilePage>
                       cityController.text,
                     );
                   }
-                  if (_imageFile != null) {
-                    uploadProfileImage(_imageFile!);
+                  if (imageFile != null) {
+                    UserService().uploadProfileImage(imageFile!);
                   }
-                  if(mounted) {
+                  if (mounted) {
                     setState(() {
-                    _status = !_status;
-                  });
+                      data['_status'] = !data['_status'];
+                    });
                   }
                 },
               ),
@@ -294,10 +353,10 @@ class MapScreenState extends State<ProfilePage>
                       Colors.redAccent.shade200),
                 ),
                 onPressed: () {
-                  if(mounted) {
+                  if (mounted) {
                     setState(() {
-                    _status = false;
-                  });
+                      data['_status'] = false;
+                    });
                   }
                 },
               ),
@@ -309,70 +368,12 @@ class MapScreenState extends State<ProfilePage>
     );
   }
 
-  Widget _getEditIcon() {
-    return GestureDetector(
-      child: const CircleAvatar(
-        backgroundColor: Colors.deepPurpleAccent,
-        radius: 14.0,
-        child: Icon(
-          Icons.edit,
-          color: Colors.white,
-          size: 16.0,
-        ),
-      ),
-      onTap: () {
-        if(mounted) {
-          setState(() {
-          _status = !_status;
-        });
-        }
-      },
-    );
-  }
-
-  Future pickImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if(mounted) {
-      setState(() {
-      _imageFile = File(pickedFile!.path);
-    });
-    }
-  }
-
-  getProfileImage() async {
+  Future<Map<String, dynamic>> getProfile() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-
-    String img = await getUserProfileImage(userUID);
-    if(mounted) {
-      setState(() {
-      profileImage = img;
-    });
-    }
-  }
-
-  getProfile() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    String userUID =
-        jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-    Map<String, dynamic> profile = await getUserProfile(userUID);
-    if (profile.isNotEmpty) {
-      if(mounted) {
-        setState(() {
-        nameController.text = profile['name'];
-        emailController.text = profile['email'];
-        mobileController.text = profile['mobile'];
-        professionController.text = profile['profession'];
-        organisationController.text = profile['organisation'];
-        streetController.text = profile['street'];
-        countryController.text = profile['country'];
-        stateController.text = profile['state'];
-        cityController.text = profile['city'];
-        pincodeController.text = profile['pincode'];
-      });
-      }
-    }
+    Map<String, dynamic> profile = await UserService().getUserProfile(userUID);
+    
+    return profile;
   }
 }

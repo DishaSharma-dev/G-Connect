@@ -1,10 +1,22 @@
+
+
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:gconnect/home/home.dart';
-import 'package:gconnect/intro_slider/intro_slider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:gconnect/constants.dart';
+import 'package:gconnect/home/home_page.dart';
+import 'package:gconnect/screens/intro_slider/intro_slider.dart';
+import 'package:gconnect/services/auth_service.dart';
+import 'package:gconnect/themes.dart';
+
+
+Future<void> main() async {
+  HttpOverrides.global = MyHttpOverrides();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -15,18 +27,50 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-Future<void> main() async {
-  HttpOverrides.global = MyHttpOverrides();
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  final pref = await SharedPreferences.getInstance();
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  runApp(
-    MaterialApp(
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    currentTheme.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: pref.getBool('isUser') == true
-          ? const HomePage(currentPage: 0)
-          : const IntroSlider(),
-    ),
-  );
+      home: FutureBuilder(
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            bool isLogged = snapshot.data as bool;
+            if (isLogged) {
+              return const HomePage(currentPage: 0);
+            } else {
+              return const IntroSlider();
+            }
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+        future: getDestination(),
+      ),
+      title: ConstantTexts().appTitle,
+      theme: CustomTheme.lightTheme,
+      darkTheme: CustomTheme.darkTheme,
+      themeMode: currentTheme.currentTheme,
+    );
+  }
+
+  Future<bool> getDestination() async {
+    return await AuthService().googleSignIn.isSignedIn();
+  }
 }

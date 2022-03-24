@@ -43,7 +43,6 @@ dependencies:
   bottom_navy_bar: 
   icon_badge: 
   qr_flutter: 
-  qrscan: 
   image_picker: 
   permission_handler:
   http: 
@@ -54,6 +53,10 @@ dependencies:
   loading_animation_widget :
   osm_nominatim: 
   universe: 
+  fab_circular_menu: ^1.0.0
+  barcode_scan2: ^4.2.0
+  flutter_osm_plugin: ^0.32.2
+  
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart'; 
-import 'package:gconnect/home/home.dart';
-import 'package:gconnect/services/userServices.dart';
+import 'package:flutter/material.dart';
+import 'package:gconnect/home/home_page.dart';
+import 'package:gconnect/home/pages/user_details.dart';
+import 'package:gconnect/services/user_services.dart'; 
 import 'package:gconnect/shared/constants.dart';
 import 'package:gconnect/shared/snackbar_response.dart';
-import 'package:gconnect/shared/user_details.dart';
 
 class ContactRow extends StatelessWidget {
   final DataCallback onContactdeleted;
@@ -52,12 +52,12 @@ class ContactRow extends StatelessWidget {
           children: [
             IconButton(
                 onPressed: () {
-                  deleteContact(data['uid'], data['isFavorite']);
+                  UserService().deleteContact(data['uid'], data['isFavorite']);
                   toggleFavorite();
 
-                  addUserInContactList(data['uid'], data['isFavorite']);
+                  UserService().addContact(data['uid'], data['isFavorite']);
 
-                  updateFavoriteInSharedPreferences(
+                  UserService().updateContactInSharedPreferences(
                       data['uid'], data['isFavorite'], false);
                       if(page == 1)
                       {
@@ -76,9 +76,9 @@ class ContactRow extends StatelessWidget {
                 )),
             IconButton(
                 onPressed: () {
-                  deleteContact(
+                  UserService().deleteContact(
                       data['uid'], data['isFavorite']); // deleted from server
-                  updateFavoriteInSharedPreferences(
+                  UserService().updateContactInSharedPreferences(
                       data['uid'],
                       data['isFavorite'],
                       true); // deleted from sharedPreferences
@@ -129,8 +129,8 @@ class ContactRow extends StatelessWidget {
               child: Text(data['profession'],
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  style: const TextStyle(
+                  softWrap: false,  
+                    style: const TextStyle(
                       color: contactProfession,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w300,

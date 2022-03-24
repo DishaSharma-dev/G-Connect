@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_onboard/flutter_onboard.dart';
-import 'package:gconnect/account/login.dart';
+import 'package:gconnect/screens/account/login.dart';
 
 class IntroSlider extends StatefulWidget {
   const IntroSlider({ Key? key }) : super(key: key);
@@ -39,7 +39,7 @@ class _IntroSliderState extends State<IntroSlider> {
         skipButton: TextButton(
           onPressed: () {
             Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const SignInScreen()));
+        context, MaterialPageRoute(builder: (context) => const Login()));
           },
           child: const Text(
             "Skip",
@@ -86,7 +86,7 @@ class _IntroSliderState extends State<IntroSlider> {
     } else {
       //print("on done pressed");
        Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const SignInScreen()));
+        context, MaterialPageRoute(builder: (context) => const Login()));
     }
   }
 }

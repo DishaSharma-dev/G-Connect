@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:gconnect/services/userServices.dart';
+import 'package:gconnect/services/user_services.dart';
+import 'package:gconnect/shared/contact_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:osm_nominatim/osm_nominatim.dart';
-import '../../shared/contact_card.dart';
 
 class Favorite extends StatefulWidget {
   const Favorite({Key? key}) : super(key: key);
@@ -143,8 +143,8 @@ class _FavoriteState extends State<Favorite> {
         sharedPreferences.getString("user_data").toString())['contacts'];
 
     contacts.forEach((element) async {
-      Map<String, dynamic> data = await getUserProfile(element['uid']);
-      data['userImage'] = await getUserProfileImage(data['uid']);
+      Map<String, dynamic> data = await UserService().getUserProfile(element['uid']);
+      data['userImage'] = await UserService().getUserProfileImage(data['uid']);
       data['isFavorite'] = element['isFavorite'];
       await getLatLong(data['city']);
 
