@@ -14,14 +14,15 @@ class UserService {
   final userReference = FirebaseFirestore.instance.collection("user");
   final FirebaseStorage storage = FirebaseStorage.instance;
 
+  // For adding user in contact list
   addContact(String uid, bool isFavorite) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-    userReference.doc(uid).get().then((value) => {
+    await userReference.doc(uid).get().then((value) async => {
           if (value.exists)
             {
-              userReference.doc(userUID).update({
+              await userReference.doc(userUID).update({
                 "contacts": FieldValue.arrayUnion([
                   {"uid": uid, "isFavorite": isFavorite}
                 ])
@@ -31,30 +32,30 @@ class UserService {
     updateContactInSharedPreferences(uid, isFavorite, false);
   }
 
+  // For updating contact in shared prefrences
   updateContactInSharedPreferences(
       String uid, bool isFavorite, bool del) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     Map<String, dynamic> userData =
         jsonDecode(sharedPreferences.getString("user_data").toString());
-
-    var contacts = userData['contacts'];
+ 
 
     if (del) {
-      contacts.removeWhere((element) => element['uid'] == uid);
+      userData['contacts'].removeWhere((element) => element['uid'] == uid);
     } else {
-      int index = contacts.indexWhere((element) => element['uid'] == uid);
+      int index = userData['contacts'].indexWhere((element) => element['uid'] == uid);
       if (index != -1) {
-        contacts[index]['isFavorite'] = isFavorite;
+        userData['contacts'][index]['isFavorite'] = isFavorite;
       } else {
-        contacts.add({uid: uid, isFavorite: isFavorite});
+        userData['contacts'].add({uid: uid, isFavorite: isFavorite});
       }
     }
-
-    userData['contacts'] = contacts;
+ 
 
     sharedPreferences.setString("user_data", jsonEncode(userData));
   }
 
+  //For updating user profile
   updateUserProfile(
       BuildContext context,
       String name,
@@ -79,6 +80,8 @@ class UserService {
       "state": state,
       "city": city,
       "pincode": pincode
+    }).onError((error, stackTrace) => {
+      
     });
     // .then((snapshot) =>
     // showResponse(context, updateProfileSuccessMessage,
@@ -87,14 +90,16 @@ class UserService {
     //     const Color.fromARGB(252, 238, 36, 36)));
   }
 
+  //For updating user image
   uploadProfileImage(File image) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
 
-    storage.ref().child('profiles/$userUID').putFile(image);
+    await storage.ref().child('profiles/$userUID').putFile(image);
   }
 
+  //For getting user frofile image
   Future<String> getUserProfileImage(String userUID) async {
     String image = "";
     await storage
@@ -106,6 +111,7 @@ class UserService {
     return image;
   }
 
+  //For getting user profile
   Future<Map<String, dynamic>> getUserProfile(String uid) async {
     Map<String, dynamic> profile = {};
     await userReference.doc(uid).get().then((snapshot) => {
@@ -117,6 +123,7 @@ class UserService {
     return profile;
   }
 
+  //For deleting user
   deleteContact(String uid, bool isFavorite) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
