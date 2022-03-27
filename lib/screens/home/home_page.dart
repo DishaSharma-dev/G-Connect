@@ -1,10 +1,12 @@
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gconnect/constants.dart';
 import 'package:gconnect/screens/account/login.dart';
 import 'package:gconnect/services/auth_service.dart';
 import 'package:gconnect/services/user_services.dart';
+import 'package:gconnect/shared/custom_dialog.dart';
 import 'package:gconnect/themes.dart';
 import 'pages/favorite.dart';
 import 'pages/home.dart';
@@ -29,11 +31,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
         title: Text(ConstantTexts().appTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.dark_mode_outlined),
+            icon: Icon(currentTheme.currentTheme == ThemeMode.light
+                ? Icons.brightness_5_outlined
+                : Icons.brightness_4_outlined),
             onPressed: () {
               currentTheme.toggleTheme();
             },
@@ -57,18 +60,20 @@ class _HomePageState extends State<HomePage> {
           children: const <Widget>[Home(), Favorite(), MineQR(), Profile()],
           onPageChanged: (index) {
             setState(() => currentPage = index);
+            WidgetsBinding.instance?.focusManager.primaryFocus?.unfocus();
           },
         ),
       ),
       floatingActionButton: FabCircularMenu(
-        ringColor: Theme.of(context).primaryColor,
-        children: <Widget>[
-        menuItem(Icons.home_outlined, "Home", 0),
-        menuItem(Icons.favorite_border_outlined, "Favorite", 1),
-        menuItem(Icons.qr_code_outlined, "Mine QR", 2),
-        menuItem(Icons.person_outline_sharp, "Profile", 3),
-        menuItem(Icons.qr_code_scanner_outlined, "Scan QR", 4),
-      ]),
+          fabColor: Theme.of(context).buttonColor,
+          ringColor: Theme.of(context).buttonColor,
+          children: <Widget>[
+            menuItem(Icons.home_outlined, "Home", 0),
+            menuItem(Icons.favorite_border_outlined, "Favorite", 1),
+            menuItem(Icons.qr_code_outlined, "Mine QR", 2),
+            menuItem(Icons.person_outline_sharp, "Profile", 3),
+            menuItem(Icons.qr_code_scanner_outlined, "Scan QR", 4),
+          ]),
     );
   }
 
@@ -100,16 +105,48 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future qrScanner() async {
-    var result = await BarcodeScanner.scan(
-      options: const ScanOptions(
-        strings: {
-          'cancel': "Back"
-        },
-        android: AndroidOptions(
-          aspectTolerance: 1
+    // var result = await BarcodeScanner.scan(
+    //   options: const ScanOptions(
+    //     strings: {
+    //       'cancel': "Back"
+    //     },
+    //     android: AndroidOptions(
+    //       aspectTolerance: 1
+    //     ),
+    //   ),
+    // );
+    try {
+      final result = await BarcodeScanner.scan(
+        options: const ScanOptions(
+          strings: {'cancel': "Back"},
+          android: AndroidOptions(
+            aspectTolerance: 1,
+            useAutoFocus: true,
+          ),
         ),
-      ),
-    );
-    UserService().addContact(result.rawContent, false);
+      );
+      if (result.rawContent.length == 28) {
+        await UserService()
+            .addContact(result.rawContent, false)
+            .then((value) => {
+                  const CustomDialogBox(
+                    title: 'Success',
+                    descriptions: "Profile updated successfully",
+                    text: 'OK',
+                    imagePath: 'images/assets/avatar.png',
+                  )
+                })
+            .onError((error, stackTrace) => {
+                  CustomDialogBox(
+                    title: 'Failed',
+                    descriptions: error.toString(),
+                    text: 'OK',
+                    imagePath: 'images/assets/avatar.png',
+                  )
+                });
+      }
+    } on PlatformException catch (e) {
+      print(e);
+    }
   }
 }

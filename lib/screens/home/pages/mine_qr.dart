@@ -11,7 +11,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
 
-
 class MineQR extends StatefulWidget {
   const MineQR({Key? key}) : super(key: key);
 
@@ -21,10 +20,11 @@ class MineQR extends StatefulWidget {
 
 class _MineQRState extends State<MineQR> {
   final GlobalKey genKey = GlobalKey();
-
+  late Future mineQRFuture;
   @override
   void initState() {
     super.initState();
+    mineQRFuture = setMineQRValue();
   }
 
   @override
@@ -47,24 +47,25 @@ class _MineQRState extends State<MineQR> {
                   key: genKey,
                   child: Container(
                     margin: const EdgeInsets.all(25),
-                    height: MediaQuery.of(context).size.height / 1.65,
+                    height: MediaQuery.of(context).size.height / 1.55,
                     decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
                         border: Border.all(
-                            color: Colors.deepPurpleAccent,
+                            color: Theme.of(context).colorScheme.primary,
                             width: 1,
                             style: BorderStyle.solid),
                         borderRadius: BorderRadius.circular(15),
-                        boxShadow: const [
+                        boxShadow: [
                           BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(
-                              1.0,
-                              1.0,
+                            color: Theme.of(context).colorScheme.primary,
+                            offset: const Offset(
+                              0.5,
+                              0.5,
                             ),
-                            blurRadius: 10.0,
-                            spreadRadius: 2.0,
+                            blurRadius: 6.0,
+                            spreadRadius: 1.0,
                           ),
-                          BoxShadow(
+                          const BoxShadow(
                             color: Colors.white,
                             offset: Offset(0.0, 0.0),
                             blurRadius: 0.0,
@@ -78,15 +79,14 @@ class _MineQRState extends State<MineQR> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Container(
-                              width: 70,
-                              height: 70,
+                              width: 75,
+                              height: 75,
                               decoration: BoxDecoration(
-                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(
-                                      width: 1,
+                                      width: 2,
                                       style: BorderStyle.solid,
-                                      color: Colors.deepPurpleAccent)),
+                                      color: Colors.white)),
                               child: CircleAvatar(
                                 radius: 30.0,
                                 backgroundImage:
@@ -95,17 +95,43 @@ class _MineQRState extends State<MineQR> {
                               )),
                           Column(
                             children: [
-                              Text(data["name"]),
-                              Text(data["email"]),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Text(data["name"],
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Text(data["email"],
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme.primary,
+                                    )),
+                              ),
                             ],
                           ),
-                          QrImage(
-                            data: data["uid"],
-                            version: QrVersions.auto,
-                            size: 200.0,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: QrImage(
+                              data: data["uid"],
+                              version: QrVersions.auto,
+                              size: 200.0,
+                              backgroundColor: Colors.white,
+                            ),
                           ),
-                          const Text(
-                              "Anyone can scan this QR to add you to therir contact list."),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              "Anyone can scan this QR to add you to therir contact list.",
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme.primary,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -114,19 +140,16 @@ class _MineQRState extends State<MineQR> {
                 ElevatedButton.icon(
                   icon: const Icon(
                     Icons.share_sharp,
-                    color: Colors.white,
                     size: 30.0,
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).buttonColor),
                   ),
                   label: const Text('Share QR'),
                   onPressed: () async {
                     await takePicture(data['name']);
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.deepPurpleAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
                 )
               ],
             );
@@ -135,7 +158,7 @@ class _MineQRState extends State<MineQR> {
             child: CircularProgressIndicator(),
           );
         },
-        future: setMineQRValue());
+        future: mineQRFuture);
   }
 
   Future<Map<String, dynamic>> setMineQRValue() async {

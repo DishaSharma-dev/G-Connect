@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gconnect/constants.dart';
-import 'package:gconnect/home/home_page.dart';
+import 'package:gconnect/screens/home/home_page.dart';
 import 'package:gconnect/screens/intro_slider/intro_slider.dart';
 import 'package:gconnect/services/auth_service.dart';
 import 'package:gconnect/themes.dart';
@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
   build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      
       home: FutureBuilder(
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {

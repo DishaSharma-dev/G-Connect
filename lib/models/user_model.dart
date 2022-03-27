@@ -11,7 +11,7 @@ class UserModel {
   String state = "";
   String city = "";
   String pincode = "";
-  List<String> contacts = [];
+  List<Map<String, dynamic>> contacts = [];
 
   UserModel(
       {required this.uid,

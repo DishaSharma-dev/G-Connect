@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gconnect/shared/custom_dialog.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -15,7 +16,7 @@ class UserService {
   final FirebaseStorage storage = FirebaseStorage.instance;
 
   // For adding user in contact list
-  addContact(String uid, bool isFavorite) async {
+  Future addContact(String uid, bool isFavorite) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
@@ -38,27 +39,27 @@ class UserService {
     final sharedPreferences = await SharedPreferences.getInstance();
     Map<String, dynamic> userData =
         jsonDecode(sharedPreferences.getString("user_data").toString());
- 
 
     if (del) {
       userData['contacts'].removeWhere((element) => element['uid'] == uid);
     } else {
-      int index = userData['contacts'].indexWhere((element) => element['uid'] == uid);
+      int index =
+          userData['contacts'].indexWhere((element) => element['uid'] == uid);
       if (index != -1) {
         userData['contacts'][index]['isFavorite'] = isFavorite;
       } else {
         userData['contacts'].add({uid: uid, isFavorite: isFavorite});
       }
     }
- 
-
+    print(userData);
+    print(userData.toString());
     sharedPreferences.setString("user_data", jsonEncode(userData));
   }
 
   //For updating user profile
   updateUserProfile(
       BuildContext context,
-      String name,
+      String name,  
       String mobile,
       String profession,
       String organisation,
@@ -70,24 +71,43 @@ class UserService {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-    userReference.doc(userUID).update({
-      "name": name,
-      "mobile": mobile,
-      "profession": profession,
-      "organisation": organisation,
-      "street": street,
-      "country": country,
-      "state": state,
-      "city": city,
-      "pincode": pincode
-    }).onError((error, stackTrace) => {
-      
-    });
-    // .then((snapshot) =>
-    // showResponse(context, updateProfileSuccessMessage,
-    //     const Color.fromARGB(253, 18, 177, 58)))
-    // .catchError((onError) => showResponse(context, updateProfileFailedMessage,
-    //     const Color.fromARGB(252, 238, 36, 36)));
+    await userReference
+        .doc(userUID)
+        .update({
+          "name": name,
+          "mobile": mobile,
+          "profession": profession,
+          "organisation": organisation,
+          "street": street,
+          "country": country,
+          "state": state,
+          "city": city,
+          "pincode": pincode
+        })
+        .then((value) => {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext buildContext) {
+                    return const CustomDialogBox(
+                      title: 'Success',
+                      descriptions: "Profile updated successfully",
+                      text: 'OK',
+                      imagePath: 'assets/images/correct.png',
+                    );
+                  })
+            })
+        .onError((error, stackTrace) => {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext buildContext) {
+                    return CustomDialogBox(
+                      title: 'Failed',
+                      descriptions: error.toString(),
+                      text: 'OK',
+                      imagePath: 'assets/images/wrong.png',
+                    );
+                  })
+            });
   }
 
   //For updating user image
@@ -124,15 +144,17 @@ class UserService {
   }
 
   //For deleting user
-  deleteContact(String uid, bool isFavorite) async {
+  Future deleteContact(String uid, bool isFavorite) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
 
-    await userReference.doc(userUID).update({
-      "contacts": FieldValue.arrayRemove([
-        {"uid": uid, "isFavorite": isFavorite}
-      ])
-    });
+    await userReference
+        .doc(userUID)
+        .update({
+          "contacts": FieldValue.arrayRemove([
+            {"uid": uid, "isFavorite": isFavorite}
+          ])
+        });
   }
 }

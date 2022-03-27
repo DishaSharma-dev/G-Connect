@@ -7,7 +7,6 @@ import 'package:gconnect/services/user_services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
@@ -19,6 +18,13 @@ class _ProfileState extends State<Profile> {
   final picker = ImagePicker();
   Map<String, dynamic> data = {"_status": false};
   File? imageFile;
+  late Future getProfileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    //getProfileFuture = getProfile();
+  }
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -61,55 +67,54 @@ class _ProfileState extends State<Profile> {
             children: <Widget>[
               Column(
                 children: <Widget>[
-                  Container(
-                    color: Colors.white,
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20.0),
-                          child: Stack(fit: StackFit.loose, children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  width: 140.0,
-                                  height: 140.0,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: imageFile != null
-                                        ? Image.file(imageFile!)
-                                        : renderImage(data['user_image'] ?? ""),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 90.0, right: 100.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    CircleAvatar(
-                                      backgroundColor: Colors.deepPurpleAccent,
-                                      radius: 25.0,
-                                      child: IconButton(
-                                        icon: const Icon(Icons.camera_alt),
-                                        color: Colors.white,
-                                        onPressed: () {
-                                          pickImage();
-                                        },
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ]),
-                        )
-                      ],
-                    ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Stack(fit: StackFit.loose, children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 140.0,
+                                height: 140.0,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: imageFile != null
+                                      ? Image.file(imageFile!)
+                                      : renderImage(data['user_image'] ?? ""),
+                                ),
+                              )
+                            ],
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 90.0, right: 100.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    backgroundColor: Theme.of(context)
+                                        .appBarTheme
+                                        .backgroundColor,
+                                    radius: 25.0,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.camera_alt),
+                                      color: Theme.of(context).iconTheme.color,
+                                      onPressed: () {
+                                        pickImage();
+                                      },
+                                    ),
+                                  )
+                                ],
+                              )),
+                        ]),
+                      )
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 25.0, top: 15),
@@ -121,31 +126,20 @@ class _ProfileState extends State<Profile> {
                         children: <Widget>[
                           Padding(
                               padding: const EdgeInsets.only(
-                                  left: 25.0, right: 25.0, top: 25.0),
+                                  left: 25.0,
+                                  right: 25.0,
+                                  top: 25.0,
+                                  bottom: 15),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: const <Widget>[
-                                      Text(
-                                        'Parsonal Information',
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
+                                  Text(
+                                    'Parsonal Information',
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
                                   ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      getEditIcon(),
-                                    ],
-                                  )
+                                  getEditIcon(),
                                 ],
                               )),
                           formField(
@@ -156,7 +150,7 @@ class _ProfileState extends State<Profile> {
                               TextInputType.name),
                           formField(
                               "Email Address",
-                              Icons.mail_outline_outlined,
+                              Icons.mail_outline_rounded,
                               false,
                               emailController,
                               TextInputType.emailAddress),
@@ -230,13 +224,13 @@ class _ProfileState extends State<Profile> {
 
   Widget getEditIcon() {
     return GestureDetector(
-      child: const CircleAvatar(
-        backgroundColor: Colors.deepPurpleAccent,
+      child: CircleAvatar(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         radius: 14.0,
         child: Icon(
           Icons.edit,
-          color: Colors.white,
           size: 16.0,
+          color: Theme.of(context).iconTheme.color,
         ),
       ),
       onTap: () {
@@ -258,27 +252,38 @@ class _ProfileState extends State<Profile> {
           controller: controller,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           keyboardType: inputType,
-          style: TextStyle(color: isEnabled ? Colors.black : Colors.grey),
+          style: TextStyle(
+              color: isEnabled
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.secondary),
           keyboardAppearance: Brightness.light,
-          cursorColor: const Color.fromARGB(255, 179, 136, 255),
           decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              floatingLabelStyle:
-                  const TextStyle(color: Color.fromARGB(255, 179, 136, 255)),
+              floatingLabelStyle: TextStyle(
+                  color: isEnabled
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary),
               labelText: label,
+              labelStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.primary),
               isDense: true,
               suffixIcon: Icon(icon,
                   color: isEnabled
-                      ? const Color.fromARGB(255, 179, 136, 255)
-                      : Colors.grey),
-              focusedBorder: const OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: Colors.deepPurpleAccent, width: 1)),
-              enabledBorder: const OutlineInputBorder(
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary),
+              focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                      color: Color.fromARGB(255, 179, 136, 255), width: 1)),
-              errorBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red, width: 1))),
+                      color: Theme.of(context).colorScheme.primary, width: 2)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary, width: 1)),
+              disabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.secondary,
+                      width: 1)),
+              errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.error, width: 1))),
         ));
   }
 
@@ -291,9 +296,12 @@ class _ProfileState extends State<Profile> {
             country: countryController,
             state: stateController,
             city: cityController,
-            textFieldInputBorder: const OutlineInputBorder(
+            textFieldInputBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                    color: Color.fromARGB(255, 179, 136, 255), width: 1)),
+                    color: !data['_status']
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.secondary,
+                    width: 1)),
           ),
         ));
   }
@@ -311,13 +319,13 @@ class _ProfileState extends State<Profile> {
               child: ElevatedButton(
                 child: const Text("Save"),
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.deepPurpleAccent),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).buttonColor),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   final bool isValid = _formKey.currentState!.validate();
                   if (isValid) {
-                    UserService().updateUserProfile(
+                    await UserService().updateUserProfile(
                       context,
                       nameController.text,
                       mobileController.text,
@@ -329,14 +337,19 @@ class _ProfileState extends State<Profile> {
                       stateController.text,
                       cityController.text,
                     );
+                    await updateProfileInSharedPrefrences(
+                        nameController.text,
+                        mobileController.text,
+                        professionController.text,
+                        organisationController.text,
+                        streetController.text,
+                        pincodeController.text,
+                        countryController.text,
+                        stateController.text,
+                        cityController.text);
                   }
                   if (imageFile != null) {
-                    UserService().uploadProfileImage(imageFile!);
-                  }
-                  if (mounted) {
-                    setState(() {
-                      data['_status'] = !data['_status'];
-                    });
+                    await UserService().uploadProfileImage(imageFile!);
                   }
                 },
               ),
@@ -373,7 +386,36 @@ class _ProfileState extends State<Profile> {
     String userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
     Map<String, dynamic> profile = await UserService().getUserProfile(userUID);
-    
+
     return profile;
+  }
+
+  updateProfileInSharedPrefrences(
+      String name,
+      String mobile,
+      String profession,
+      String organisation,
+      String street,
+      String pincode,
+      String country,
+      String state,
+      String city) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    Map<String, dynamic> profile =
+        jsonDecode(sharedPreferences.getString("user_data").toString());
+    profile['name'] = name;
+    profile['mobile'] = mobile;
+    profile['profession'] = profession;
+    profile['organisation'] = organisation;
+    profile['street'] = street;
+    profile['pincode'] = pincode;
+    profile['country'] = country;
+    profile['city'] = city;
+    profile['state'] = state;
+
+    await sharedPreferences.setString("user_data", jsonEncode(profile));
+    setState(() {
+      data['_status'] = false;
+    });
   }
 }

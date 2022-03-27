@@ -46,14 +46,14 @@ class _LoginState extends State<Login> {
                 ),
                 SizedBox(height: size.height * 0.05),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    AuthService().signIn(context);
+                  onPressed: () async {
+                    await AuthService().signIn(context);
                   },
                   icon: const Icon(Icons.g_mobiledata),
                   label: const Text("Sign in with Google"),
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
-                      primary: Colors.purple,
+                      primary: const Color.fromARGB(255, 5, 1, 5),
                       shadowColor: Colors.purpleAccent,
                       textStyle: const TextStyle(fontSize: 15)),
                 )

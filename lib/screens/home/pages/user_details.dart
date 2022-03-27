@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+//import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:universe/universe.dart';
 
 class UserDetail extends StatelessWidget {
   final BackCallback backCallback;
@@ -12,15 +13,12 @@ class UserDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.7;
     final panelHeightClosed = MediaQuery.of(context).size.height * 0.25;
-    MapController controller = MapController(
-                            initMapWithUserPosition: false,
-                            initPosition: GeoPoint(latitude: userData['latitude'], longitude: userData['longitude']),
-                       );
-  
+     
 
     return WillPopScope(
       onWillPop: () => Future.sync(onWillPop),
       child: Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
@@ -30,60 +28,29 @@ class UserDetail extends StatelessWidget {
           title: const Text("Details"),
           centerTitle: true,
           elevation: 10,
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         ),
         body: SlidingUpPanel(
-          backdropColor: Colors.white,
+          color: Theme.of(context).cardColor,
           maxHeight: panelHeightOpen,
           minHeight: panelHeightClosed,
           parallaxEnabled: true,
           parallaxOffset: .5,
-          // body: U.OpenStreetMap(
-          //   center: [userData['latitude'], userData['longitude']],
-          //   type: OpenStreetMapType.Mapnik,
-          //   markers: U.MarkerLayer([
-
-          //     // marker icon
-          //     U.Marker([userData['latitude'], userData['longitude']],
-          //         widget: const MarkerIcon(
-          //           icon: Icons.location_on,
-          //           color: Colors.red,
-          //         )),
-          //   ]),
-          //   zoom: 15,
-          // ),
-          body: OSMFlutter(
-            controller: controller,
-            trackMyPosition: false,
-            initZoom: 12,
-            minZoomLevel: 8,
-            maxZoomLevel: 14,
-            stepZoom: 1.0,
-            userLocationMarker: UserLocationMaker(
-              personMarker: MarkerIcon(
-                icon: Icon(
-                  Icons.location_history_rounded,
-                  color: Colors.red,
-                  size: 48,
-                ),
-              ),
-              directionArrowMarker: MarkerIcon(
-                icon: Icon(
-                  Icons.double_arrow,
-                  size: 48,
-                ),
-              ),
-            ),
-           
-            markerOption: MarkerOption(
-                defaultMarker: MarkerIcon(
-              icon: Icon(
-                Icons.person_pin_circle,
-                color: Colors.blue,
-                size: 56,
-              ),
-            )),
+          body: U.OpenStreetMap(
+            center: [userData['latitude'], userData['longitude']],
+            type: OpenStreetMapType.Mapnik,
+            
+            markers: U.MarkerLayer([
+              // marker icon
+              U.Marker([userData['latitude'], userData['longitude']],
+                  widget: const MarkerIcon(
+                    icon: Icons.location_on,
+                    color: Colors.red,
+                  )),
+            ]),
+            zoom: 15,
           ),
+          
           panelBuilder: (controller) =>
               PanelWidget(controller: controller, userData: userData),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
@@ -105,9 +72,9 @@ class PanelWidget extends StatelessWidget {
       {Key? key, required this.controller, required this.userData})
       : super(key: key);
 
-  Widget tileView(IconData icon, String title) {
+  Widget tileView(IconData icon, String title, BuildContext context) {
     return ListTile(
-      leading: Icon(icon),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary,),
       title: Text(title),
       visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
     );
@@ -136,8 +103,9 @@ class PanelWidget extends StatelessWidget {
         child: Container(
           width: 90.0,
           height: 90.0,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
+            color: Theme.of(context).buttonColor
           ),
           child: ClipRRect(
               borderRadius: BorderRadius.circular(100),
@@ -157,8 +125,8 @@ class PanelWidget extends StatelessWidget {
         child: Text(
           userData['name'],
           textAlign: TextAlign.center,
-          style: const TextStyle(
-              color: Colors.purpleAccent,
+          style: TextStyle(
+              color: Theme.of(context).buttonColor,
               fontWeight: FontWeight.bold,
               fontSize: 20),
         ),
@@ -169,12 +137,12 @@ class PanelWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              tileView(Icons.email_outlined, userData['email']),
-              tileView(Icons.phone_android_outlined, userData['mobile']),
+              tileView(Icons.email_outlined, userData['email'], context),
+              tileView(Icons.phone_android_outlined, userData['mobile'], context),
               tileView(Icons.location_city_outlined,
-                  userData['city'] + ", " + userData['country']),
-              tileView(Icons.work_outline, userData['profession']),
-              tileView(Icons.workspaces, userData['organisation']),
+                  userData['city'] + ", " + userData['country'], context),
+              tileView(Icons.work_outline, userData['profession'], context),
+              tileView(Icons.workspaces, userData['organisation'], context),
             ],
           )),
     ]);

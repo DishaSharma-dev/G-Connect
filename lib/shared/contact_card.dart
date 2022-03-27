@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gconnect/home/home_page.dart';
-import 'package:gconnect/home/pages/user_details.dart';
+import 'package:gconnect/screens/home/home_page.dart';
+import 'package:gconnect/screens/home/pages/user_details.dart';
 import 'package:gconnect/services/user_services.dart'; 
 import 'package:gconnect/shared/constants.dart';
 import 'package:gconnect/shared/snackbar_response.dart';
