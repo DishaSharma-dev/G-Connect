@@ -48,7 +48,11 @@ class UserService {
       if (index != -1) {
         userData['contacts'][index]['isFavorite'] = isFavorite;
       } else {
-        userData['contacts'].add({uid: uid, isFavorite: isFavorite});
+        Map<String, dynamic> newContact = {
+          "uid" : uid,
+          "isFavorite" : isFavorite
+        };
+        userData['contacts'].add(newContact);
       }
     }
     print(userData);
@@ -146,9 +150,9 @@ class UserService {
   //For deleting user
   Future deleteContact(String uid, bool isFavorite) async {
     final sharedPreferences = await SharedPreferences.getInstance();
-    String userUID =
+    var userUID =
         jsonDecode(sharedPreferences.getString("user_data").toString())['uid'];
-
+    print(userUID);
     await userReference
         .doc(userUID)
         .update({

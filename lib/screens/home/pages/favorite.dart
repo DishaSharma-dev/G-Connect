@@ -136,20 +136,32 @@ class _FavoriteState extends State<Favorite> {
                             color: Colors.white),
                       ),
                       leading: list[index]['user_image'] == ""
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: Image.asset(
-                                "assets/images/avatar.png",
-                                fit: BoxFit.fill,
+                          ? Container(
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
                               ),
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: Image.network(
-                                list[index]['user_image'],
-                                fit: BoxFit.fill,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: Image.asset(
+                                  "assets/images/avatar.png",
+                                  fit: BoxFit.fill,
+                                ),
+                              ))
+                          : Container(
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
                               ),
-                            ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: Image.network(
+                                  list[index]['user_image'],
+                                  fit: BoxFit.fill,
+                                ),
+                              )),
                       children: [
                         ListTile(
                           title: Row(

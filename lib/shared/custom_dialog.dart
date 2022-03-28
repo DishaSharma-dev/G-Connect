@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gconnect/screens/home/home_page.dart';
 
 class CustomDialogBox extends StatefulWidget {
   final String title, descriptions, text, imagePath;
@@ -36,27 +37,27 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               left: 20, top: 45 + 20, right: 20, bottom: 20),
           margin: const EdgeInsets.only(top: 45),
           decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(20),
-              ),
+            shape: BoxShape.rectangle,
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
                 widget.title,
                 style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.primary
-                ),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary),
               ),
               const SizedBox(
                 height: 15,
               ),
               Text(
                 widget.descriptions,
-                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.primary),
+                style: TextStyle(
+                    fontSize: 14, color: Theme.of(context).colorScheme.primary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(
@@ -66,11 +67,19 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 alignment: Alignment.bottomRight,
                 child: FlatButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const HomePage(currentPage: 0)),
+                          (r) => false);
+                      //Navigator.of(context).pop();
                     },
                     child: Text(
                       widget.text,
-                      style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.primary),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Theme.of(context).colorScheme.primary),
                     )),
               ),
             ],
@@ -89,7 +98,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               ),
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: Image.asset(widget.imagePath, alignment: Alignment.center,width: 50, height: 50,)),
+                  child: Image.asset(
+                    widget.imagePath,
+                    alignment: Alignment.center,
+                    width: 50,
+                    height: 50,
+                  )),
             )),
       ],
     );

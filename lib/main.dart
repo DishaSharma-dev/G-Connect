@@ -9,6 +9,7 @@ import 'package:gconnect/screens/home/home_page.dart';
 import 'package:gconnect/screens/intro_slider/intro_slider.dart';
 import 'package:gconnect/services/auth_service.dart';
 import 'package:gconnect/themes.dart';
+import 'package:provider/provider.dart';
 
 
 Future<void> main() async {
@@ -35,16 +36,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late Future isLoggedIn = getDestination();
   @override
   void initState() {
     super.initState();
-    currentTheme.addListener(() {
-      setState(() {});
-    });
+    isLoggedIn = getDestination();
   }
 
   @override
   build(BuildContext context) {
+     return ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+          child: Consumer<ThemeNotifier>(
+            builder: (context, ThemeNotifier notifier, child) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       
@@ -62,12 +66,13 @@ class _MyAppState extends State<MyApp> {
             child: CircularProgressIndicator(),
           );
         },
-        future: getDestination(),
+        future: isLoggedIn,
       ),
       title: ConstantTexts().appTitle,
-      theme: CustomTheme.lightTheme,
-      darkTheme: CustomTheme.darkTheme,
-      themeMode: currentTheme.currentTheme,
+      theme: !notifier.darkTheme ? dark : light,
+    );
+    } ,
+          ),
     );
   }
 

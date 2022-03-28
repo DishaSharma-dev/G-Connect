@@ -225,7 +225,6 @@ class _HomeState extends State<Home> {
                                           !list[index]['isFavorite'];
                                     });
                                   }
-
                                   UserService()
                                       .addContact(list[index]['uid'],
                                           list[index]['isFavorite'])
@@ -244,7 +243,7 @@ class _HomeState extends State<Home> {
                                                     imagePath:
                                                         'assets/images/correct.png',
                                                   );
-                                                })
+                                                }),
                                           })
                                       .onError((error, stackTrace) => {
                                             showDialog(

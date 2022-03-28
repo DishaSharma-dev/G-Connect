@@ -12,6 +12,7 @@ import 'pages/favorite.dart';
 import 'pages/home.dart';
 import 'pages/mine_qr.dart';
 import 'pages/profile.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final int currentPage;
@@ -33,13 +34,15 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(ConstantTexts().appTitle),
         actions: [
-          IconButton(
-            icon: Icon(currentTheme.currentTheme == ThemeMode.light
-                ? Icons.brightness_5_outlined
-                : Icons.brightness_4_outlined),
-            onPressed: () {
-              currentTheme.toggleTheme();
-            },
+          Consumer<ThemeNotifier>(
+            builder: (context, notifier, child) => IconButton(
+              icon: Icon(notifier.darkTheme
+                  ? Icons.brightness_5_outlined
+                  : Icons.brightness_4_outlined),
+              onPressed: () {
+                notifier.toggleTheme();
+              },
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.logout_outlined),
@@ -79,16 +82,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget menuItem(IconData icon, String title, int index) {
     return RawMaterialButton(
-      onPressed: () {
-        setState(() {
-          if (index == 4) {
-            qrScanner();
-          } else {
-            _pageController.animateToPage(index,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.ease);
-          }
-        });
+      onPressed: () async {
+        if (index == 4) {
+          await qrScanner();
+        } else {
+          _pageController.animateToPage(index,
+              duration: const Duration(milliseconds: 200), curve: Curves.ease);
+        }
       },
       shape: const CircleBorder(),
       padding: const EdgeInsets.all(24.0),
@@ -105,16 +105,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future qrScanner() async {
-    // var result = await BarcodeScanner.scan(
-    //   options: const ScanOptions(
-    //     strings: {
-    //       'cancel': "Back"
-    //     },
-    //     android: AndroidOptions(
-    //       aspectTolerance: 1
-    //     ),
-    //   ),
-    // );
     try {
       final result = await BarcodeScanner.scan(
         options: const ScanOptions(
@@ -129,20 +119,29 @@ class _HomePageState extends State<HomePage> {
         await UserService()
             .addContact(result.rawContent, false)
             .then((value) => {
-                  const CustomDialogBox(
-                    title: 'Success',
-                    descriptions: "Profile updated successfully",
-                    text: 'OK',
-                    imagePath: 'images/assets/avatar.png',
-                  )
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext buildContext) {
+                        return const CustomDialogBox(
+                          title: 'Success',
+                          descriptions: "Profile updated successfully",
+                          text: 'OK',
+                          imagePath: 'assets/images/correct.png',
+                        );
+                      }),
+                      
                 })
             .onError((error, stackTrace) => {
-                  CustomDialogBox(
-                    title: 'Failed',
-                    descriptions: error.toString(),
-                    text: 'OK',
-                    imagePath: 'images/assets/avatar.png',
-                  )
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext buildContext) {
+                        return CustomDialogBox(
+                          title: 'Failed',
+                          descriptions: error.toString(),
+                          text: 'OK',
+                          imagePath: 'assets/images/wrong.png',
+                        );
+                      })
                 });
       }
     } on PlatformException catch (e) {
