@@ -97,6 +97,7 @@ class UserService {
                       descriptions: "Profile updated successfully",
                       text: 'OK',
                       imagePath: 'assets/images/correct.png',
+                      currentPage: "-1",
                     );
                   })
             })
@@ -109,6 +110,7 @@ class UserService {
                       descriptions: error.toString(),
                       text: 'OK',
                       imagePath: 'assets/images/wrong.png',
+                      currentPage: "-1"
                     );
                   })
             });

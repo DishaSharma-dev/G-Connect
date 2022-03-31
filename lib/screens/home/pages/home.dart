@@ -242,6 +242,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/correct.png',
+                                                        currentPage: "0",
                                                   );
                                                 }),
                                           })
@@ -257,6 +258,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/wrong.png',
+                                                        currentPage: "0",
                                                   );
                                                 })
                                           });
@@ -283,6 +285,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/correct.png',
+                                                        currentPage: "0",
                                                   );
                                                 })
                                           })
@@ -298,6 +301,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/wrong.png',
+                                                        currentPage: "0",
                                                   );
                                                 })
                                           }); // deleted from server

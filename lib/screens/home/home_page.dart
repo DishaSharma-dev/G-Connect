@@ -127,6 +127,7 @@ class _HomePageState extends State<HomePage> {
                           descriptions: "Profile updated successfully",
                           text: 'OK',
                           imagePath: 'assets/images/correct.png',
+                          currentPage: "-2",
                         );
                       }),
                       
@@ -140,6 +141,7 @@ class _HomePageState extends State<HomePage> {
                           descriptions: error.toString(),
                           text: 'OK',
                           imagePath: 'assets/images/wrong.png',
+                          currentPage: "-2",
                         );
                       })
                 });

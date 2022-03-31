@@ -242,6 +242,7 @@ class _FavoriteState extends State<Favorite> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/correct.png',
+                                                        currentPage: "1",
                                                   );
                                                 })
                                           })
@@ -257,6 +258,7 @@ class _FavoriteState extends State<Favorite> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/wrong.png',
+                                                        currentPage: "1",
                                                   );
                                                 })
                                           });
@@ -289,6 +291,7 @@ class _FavoriteState extends State<Favorite> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/correct.png',
+                                                        currentPage: "1",
                                                   );
                                                 })
                                           })
@@ -304,6 +307,7 @@ class _FavoriteState extends State<Favorite> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/wrong.png',
+                                                        currentPage: "1",
                                                   );
                                                 })
                                           }); // deleted from server

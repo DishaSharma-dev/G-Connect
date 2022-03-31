@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:gconnect/screens/home/home_page.dart';
 
 class CustomDialogBox extends StatefulWidget {
-  final String title, descriptions, text, imagePath;
+  final String title, descriptions, text, imagePath, currentPage;
 
   const CustomDialogBox(
       {Key? key,
       required this.title,
       required this.descriptions,
       required this.text,
-      required this.imagePath})
+      required this.imagePath,
+      required this.currentPage})
       : super(key: key);
 
   @override
@@ -67,13 +68,16 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 alignment: Alignment.bottomRight,
                 child: FlatButton(
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const HomePage(currentPage: 0)),
-                          (r) => false);
-                      //Navigator.of(context).pop();
+                      if (widget.currentPage == "-2") {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const HomePage(currentPage: 0)),
+                            (r) => false);
+                      } else {
+                        Navigator.of(context).pop();
+                      }
                     },
                     child: Text(
                       widget.text,
