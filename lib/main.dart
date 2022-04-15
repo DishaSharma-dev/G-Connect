@@ -1,34 +1,82 @@
-import 'package:flutter/material.dart';
+
+
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
-import 'package:gconnect/home/home.dart';
-import 'package:gconnect/intro_slider/intro_slider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:gconnect/constants.dart';
+import 'package:gconnect/screens/home/home_page.dart';
+import 'package:gconnect/screens/intro_slider/intro_slider.dart';
+import 'package:gconnect/services/auth_service.dart';
+import 'package:gconnect/themes.dart';
+import 'package:provider/provider.dart';
+
 
 Future<void> main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final pref = await SharedPreferences.getInstance();
+  runApp(const MyApp());
+}
 
-  if (pref.getBool('isUser') == true) {
-    runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
-    ));
-  } else {
-    runApp(
-      const MyApp(),
-    );
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Future isLoggedIn = getDestination();
+  @override
+  void initState() {
+    super.initState();
+    isLoggedIn = getDestination();
+  }
+
+  @override
+  build(BuildContext context) {
+     return ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+          child: Consumer<ThemeNotifier>(
+            builder: (context, ThemeNotifier notifier, child) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: IntroSlider(),
+      
+      home: FutureBuilder(
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            bool isLogged = snapshot.data as bool;
+            if (isLogged) {
+              return const HomePage(currentPage: 0);
+            } else {
+              return const IntroSlider();
+            }
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+        future: isLoggedIn,
+      ),
+      title: ConstantTexts().appTitle,
+      theme: !notifier.darkTheme ? dark : light,
     );
+    } ,
+          ),
+    );
+  }
+
+  Future<bool> getDestination() async {
+    return await AuthService().googleSignIn.isSignedIn();
   }
 }
