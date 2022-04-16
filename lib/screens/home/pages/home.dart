@@ -99,8 +99,13 @@ class _HomeState extends State<Home> {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height / 1.65,
                     child: Center(
-                      child: Text("You don't have any favorite contact",
-                          style: Theme.of(context).textTheme.headline6),
+                      child: Text("You haven't any contact",
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.color,
+                              fontSize: 12)),
                     ),
                   );
                 } else {
@@ -126,7 +131,7 @@ class _HomeState extends State<Home> {
                             color: Colors.white),
                       ),
                       subtitle: Text(
-                        list[index]['profession'],
+                        list[index]['mobile'],
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
@@ -163,50 +168,6 @@ class _HomeState extends State<Home> {
                                 ),
                               )),
                       children: [
-                        ListTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                list[index]['mobile'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                              Text(
-                                list[index]['email'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                list[index]['organisation'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                              Text(
-                                list[index]['city'] +
-                                    ", " +
-                                    list[index]['state'] +
-                                    ", " +
-                                    list[index]['country'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ),
                         const Divider(
                           height: 1,
                           thickness: 1,
@@ -242,7 +203,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/correct.png',
-                                                        currentPage: "0",
+                                                    currentPage: "0",
                                                   );
                                                 }),
                                           })
@@ -258,7 +219,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/wrong.png',
-                                                        currentPage: "0",
+                                                    currentPage: "0",
                                                   );
                                                 })
                                           });
@@ -285,7 +246,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/correct.png',
-                                                        currentPage: "0",
+                                                    currentPage: "0",
                                                   );
                                                 })
                                           })
@@ -301,7 +262,7 @@ class _HomeState extends State<Home> {
                                                     text: 'OK',
                                                     imagePath:
                                                         'assets/images/wrong.png',
-                                                        currentPage: "0",
+                                                    currentPage: "0",
                                                   );
                                                 })
                                           }); // deleted from server

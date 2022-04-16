@@ -135,7 +135,7 @@ class _ProfileState extends State<Profile> {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Text(
-                                    'Parsonal Information',
+                                    'Personal Information',
                                     style:
                                         Theme.of(context).textTheme.headline6,
                                   ),

@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Text(
+                Text(
                   "Welcome To G-Connect",
                   style: TextStyle(
                       color: Colors.purpleAccent,
@@ -53,8 +53,8 @@ class _LoginState extends State<Login> {
                   label: const Text("Sign in with Google"),
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
-                      primary: const Color.fromARGB(255, 5, 1, 5),
-                      shadowColor: Colors.purpleAccent,
+                      primary: Colors.purpleAccent,
+                      shadowColor: Colors.grey.shade400,
                       textStyle: const TextStyle(fontSize: 15)),
                 )
               ],

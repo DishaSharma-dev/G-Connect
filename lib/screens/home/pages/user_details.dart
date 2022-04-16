@@ -100,12 +100,12 @@ class PanelWidget extends StatelessWidget {
       ),
       CircleAvatar(
         radius: 50,
+        backgroundColor : Theme.of(context).cardColor,
         child: Container(
           width: 90.0,
           height: 90.0,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context).buttonColor
           ),
           child: ClipRRect(
               borderRadius: BorderRadius.circular(100),

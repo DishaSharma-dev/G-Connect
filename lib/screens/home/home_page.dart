@@ -68,8 +68,8 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FabCircularMenu(
-          fabColor: Theme.of(context).buttonColor,
-          ringColor: Theme.of(context).buttonColor,
+          fabColor: ThemeNotifier().darkTheme ? Colors.deepPurpleAccent.shade700 : Colors.grey.shade800,
+          ringColor: ThemeNotifier().darkTheme ? Colors.deepPurpleAccent.shade700 : Colors.grey.shade800,
           children: <Widget>[
             menuItem(Icons.home_outlined, "Home", 0),
             menuItem(Icons.favorite_border_outlined, "Favorite", 1),
@@ -97,10 +97,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool onWillPop() {
+    if (currentPage == 0) {
+      SystemNavigator.pop();
+    }
     _pageController.previousPage(
       duration: const Duration(milliseconds: 200),
       curve: Curves.ease,
     );
+    --currentPage;
     return false;
   }
 
@@ -130,7 +134,6 @@ class _HomePageState extends State<HomePage> {
                           currentPage: "-2",
                         );
                       }),
-                      
                 })
             .onError((error, stackTrace) => {
                   showDialog(
